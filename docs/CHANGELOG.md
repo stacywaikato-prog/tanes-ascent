@@ -1,5 +1,30 @@
 # Change log
 
+## 1.0.5-beta — 3 November 2026: lore and story fixes
+
+Stacy's decisions as cultural lead, based on the Knowledge Basket legend and Timoti Kāretu, "Te Kete Tuawhā, Te Kete Aroiti" (Te Kaharoa, 2008).
+
+- **Twelve heavens.** Level 1 is now Papatūānuku, the earth where the climb begins. Levels 2–13 are Rangi Tuatahi to Rangi Tekau-mā-rua, and the twelfth is Toi-o-ngā-Rangi. The game now matches its own carving and both sources.
+- **The kete follow Kāretu:** Tuauri holds peace, love and all things good; Tuatea holds warfare and mākutu, and the crafts of food, wood, stone and earth; Aronui holds karakia, literature, philosophy and ritual. The lore book notes that tellings differ.
+- **Io-matua-kore gives Tāne the kete** in Matangireia.
+- **Mana is defined** as Tāne's light and strength.
+- **Contradictions fixed:**
+  - the Rangi 11 card no longer promises a guardian;
+  - "every bird you freed" is now the one kererū;
+  - the Ngārara intro no longer says "third heaven".
+- **Causes added:**
+  - Whiro's swarm caged the kererū;
+  - Whiro tears the breaking heaven apart;
+  - Rūaumoko shakes the land;
+  - light reaching the world below is why it changes;
+  - every power now says where it came from.
+- **Whiro** now names his grievance: "You tore our parents apart."
+- **Story text** speaks of Tāne, not "you"; instructions still say "you".
+- **Generic fantasy words replaced:** glyph stone, greenstone relic, temples, Cloud Kingdom, Celestial Forest, "Lord of darkness".
+- **Moon Keeper** tests all who climb and serves no one.
+- **Tips updated:** out-of-date tips are fixed and a duplicate is removed.
+- **Credits** now say the tests in each heaven are imagined for this game.
+
 ## 1.0.4-beta — 3 November 2026: sound on phones
 
 - Sound now starts on phones. Phones only allow sound from a finished tap, so the game now listens for the end of a tap as well as the start.

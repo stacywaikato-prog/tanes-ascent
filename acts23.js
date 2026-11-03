@@ -191,10 +191,10 @@ W.heavenUpdate = t => {
     if (G.S.r9lit) { W.noLight = false; W.lightMul = 1.2; W.extraDark = 0; }
     else {
       if (!L.whiroT && P.x > L.start.x + 90 && (L.birdsX === undefined || P.x < L.birdsX - 60)) { L.whiroT = 1; P.lock = 200; G.audio.sfx('roar', .8); G.audio.duck(.3, 3, 2); }
-      if (L.whiroT) { L.whiroT++; if (L.whiroT === 140) { W.noLight = true; G.audio.sfx('pdeath', .5); G.shake(6); G.toast('Whiro takes the light', '“Mine by birth, little brother.” He leaves you alive in the dark.'); } }
+      if (L.whiroT) { L.whiroT++; if (L.whiroT === 140) { W.noLight = true; G.audio.sfx('pdeath', .5); G.shake(6); G.toast('Whiro takes the light', '“Stay in the dark, little brother.” He leaves Tāne alive.'); } }
       if (L.whiroT > 140) { W.noLight = true; W.lightMul = .3; W.extraDark = .32; }
       if (L.birdsX !== undefined && P.x > L.birdsX - 20 && !L.birdsT) { L.birdsT = 1; P.lock = 160; G.audio.sfx('feather'); }
-      if (L.birdsT) { L.birdsT++; if (L.birdsT === 120) { G.S.r9lit = true; W.noLight = false; G.audio.sfx('power'); G.audio.sfx('treasure'); G.weather.flash = .5; G.toast('The birds bring back the light', 'Every bird you freed returns it, warmer than before.'); } }
+      if (L.birdsT) { L.birdsT++; if (L.birdsT === 120) { G.S.r9lit = true; W.noLight = false; G.audio.sfx('power'); G.audio.sfx('treasure'); G.weather.flash = .5; G.toast('The birds bring back the light', 'The kererū Tāne freed returns with the forest birds.'); } }
     }
   }
   // Rangi 10: stone crumbles after Tāne leaves it; the heaven breaks
@@ -203,7 +203,7 @@ W.heavenUpdate = t => {
     if (P.on && L.g[fy] && L.g[fy][fx] === 13) { const k = fx + ',' + fy; if (!L.crumble[k]) L.crumble[k] = -1; }
     for (const k in L.crumble) { const [X, Y] = k.split(',').map(Number); const under = P.on && X === fx && Y === fy;
       if (L.crumble[k] === -1 && !under) L.crumble[k] = 22; else if (L.crumble[k] > 0 && --L.crumble[k] === 0) { if (L.g[Y][X] === 13) { L.g[Y][X] = 0; G.fx.burst(X * T + 8, Y * T + 8, '#a89a88', 8, 1.6); G.audio.sfx('stonehit', .4, { x: X * T }); } delete L.crumble[k]; } }
-    if (L.fallX !== undefined && !L.broke && P.x > L.fallX) { L.broke = true; G.shake(8); G.audio.sfx('roar', .7); G.audio.sfx('slam'); G.toast('The heaven breaks beneath you', 'Below, through the gaps, the heavens you climbed.');
+    if (L.fallX !== undefined && !L.broke && P.x > L.fallX) { L.broke = true; G.shake(8); G.audio.sfx('roar', .7); G.audio.sfx('slam'); G.toast('Whiro tears the heaven apart', 'Through the gaps, Tāne sees the heavens he has climbed.');
       for (let y = 0; y < L.H; y++) for (let x = Math.floor(L.fallX / T) - 8; x < Math.floor(L.fallX / T) + 8; x++) if (L.g[y] && L.g[y][x] === 13) { L.g[y][x] = 0; G.fx.burst(x * T + 8, y * T + 8, '#a89a88', 4, 2); } }
   }
   // Rangi 11: the ancestors rise
@@ -213,7 +213,7 @@ W.heavenUpdate = t => {
       for (let i = 0; i < n; i++) L.allies.push({ x: f.x - i * 14, y: f.y + T - 22, vx: 0, vy: 0, face: 1, t: i * 7, hit: 0 });
       G.audio.sfx('power', f.last ? 1 : .6); G.fx.burst(f.x + 8, f.y + 8, '#fff1c0', f.last ? 40 : 18, 2.6, { k: 'glow', g: 0 });
       if (f.last) { G.weather.flash = .5; G.shake(4); G.toast('All the ancestors rise', 'They stand with Tāne. They will hold the line below while he climbs.'); }
-      else G.toast('An ancestor rises', 'A figure of light stands beside you.');
+      else G.toast('An ancestor rises', 'A figure of light stands beside Tāne.');
     }
     if (L.allies) for (const a of L.allies) allyAI(L, P, a);
   }
@@ -286,7 +286,7 @@ G.pushShots = grad => [{ dur: 99999, hold: true, text: 'Whiro’s darkness rises
   const sp = G.tane('burst', 0); ctx.drawImage(sp.r, 168, 90); } }];
 const HOME = { 12: 'Down through the golden summit, its gates open.', 11: 'Across the battlefield, now quiet. The ancestors raise their hands.', 10: 'Through the broken heaven, whole again.', 9: 'Through Whiro’s heaven, where the black vines have flowered.',
   8: 'The aurora, mended, ripples overhead.', 7: 'Every star along the paths is lit.', 6: 'The moon guardian lights the way down.', 5: 'The still pool. In it, Tāne sees only the world ahead.',
-  4: 'The storm parts to let him pass. A truce, not forgiveness.', 3: 'Ngārara sleeps in the clouds.', 2: 'The great tree is full of birds.', 1: 'Rain falls softly on a green forest. Grief, become growth.' };
-G.homeShots = vignette => Object.keys(HOME).map(Number).sort((a, b) => b - a).map(n => ({ dur: 130, title: n === 13 ? '' : 'RANGI ' + n, titleSize: 9,
+  4: 'The storm parts to let him pass. A truce, not forgiveness.', 3: 'Ngārara sleeps in the clouds.', 2: 'The great tree is full of birds.', 1: 'Rain falls softly on a green forest. Rangi’s grief has become growth.' };
+G.homeShots = vignette => Object.keys(HOME).map(Number).sort((a, b) => b - a).map(n => ({ dur: 130, title: n === 13 ? '' : G.BIOMES[n].name.toUpperCase(), titleSize: 9,
   text: HOME[n] + (G.S.lore && G.S.lore.includes(n) ? ' The carving he found there glows as he passes.' : ''), draw: (ctx, t) => { vignette(ctx, n, t * 3, n * 60); } }));
 })();

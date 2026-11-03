@@ -14,7 +14,7 @@ G.LORE = {
   7: { t: 'The many heavens', b: 'The number of heavens and their names differ from iwi to iwi. Many tellings count twelve, with Toi-o-ngā-Rangi as the highest, and Matangireia as the house within it.' },
   8: { t: 'Io-Matua-Kore', b: 'Some traditions speak of Io-Matua-Kore, the parentless one, who dwells in the uppermost heaven and keeps the baskets. Other traditions do not include Io. Both are part of the wider story.' },
   9: { t: 'Whiro', b: 'Whiro was the elder brother. He claimed the baskets by right of birth and resented Tāne for parting their parents. In many tellings he withdraws to the underworld and sends sickness and misfortune from there.' },
-  10: { t: 'Ngā Kete o te Wānanga', b: 'Te Kete-Tuauri holds sacred and spiritual knowledge. Te Kete-Tuatea holds the knowledge of ancestors, history, and trial. Te Kete-Aronui holds the arts and skills people need to live well and care for the earth.' },
+  10: { t: 'Ngā Kete o te Wānanga', b: 'Te Kete Tuauri holds peace, love and all things good. Te Kete Tuatea holds warfare and mākutu, and the crafts of food, wood, stone and earth. Te Kete Aronui holds karakia, literature, philosophy and ritual. Tellings differ; this follows Timoti Kāretu.' },
   11: { t: 'Ngā Whatu-kura', b: 'With the baskets came two sacred stones, Te Whatu-kura Huka-a-tai and Te Whatu-kura Rehu-tai. They added mana to the knowledge and were kept with it.' },
   12: { t: 'The whare wānanga', b: 'The knowledge was taught in houses of learning. It was treated as tapu: learned carefully, held by those trained to carry it, and passed on with intent.' },
   13: { t: 'Walking into the future', b: 'Kia whakatōmuri te haere whakamua. I walk backwards into the future, with my eyes fixed on my past. Knowledge from those who came before lights the way ahead.' }
@@ -22,35 +22,34 @@ G.LORE = {
 
 /* ================= CHAPTER CARDS ================= */
 G.CHAPTER = {
-  1: 'Light has entered the world, and the people live in it, but they do not yet know how to thrive. Tāne begins the climb.',
+  1: 'Light has entered the world, but the people do not yet know how to thrive. From Papatūānuku, Tāne begins the climb to the twelfth heaven, where the kete of knowledge wait.',
   2: 'Above the first forest grows a second, older one. The roots of the world reach up to meet him.',
   3: 'Tāne climbs into the clouds. Something ancient waits on the islands of mist: a guardian bound to Whiro.',
   4: 'The air turns. Tāwhirimātea never forgave the separation, and this heaven is his.',
-  5: 'Gold light, still water, carvings older than memory. The heavens remember Tāne.',
-  6: 'The moon rules this heaven. Its gate is kept by something that has never let anyone pass.',
+  5: 'Gold light, still water, old carvings. The carvings already know Tāne’s name.',
+  6: 'The moon rules this heaven, and the tide follows the moon. Its keeper tests all who climb.',
   7: 'Paths of stars hang over nothing. One wrong step falls forever.',
   8: 'The sky moves like a living cloak. Mana gathers in storms of colour.',
   9: 'Black vines, cold mist, creatures twisted out of shape. Whiro has taken hold here.',
-  10: 'The heavens are broken. Temples float in pieces, and every handhold might give way.',
+  10: 'This heaven is breaking apart. Carved houses drift in pieces, and any handhold may give way.',
   11: 'Light and darkness are at war. Tāne must cross the battlefield to go higher.',
-  12: 'Gold everywhere, and great gates. One guardian stands between Tāne and the summit.',
-  13: 'Toi-o-ngā-Rangi. The baskets are close. So is Whiro.'
+  12: 'Gold light and open gates. Behind Tāne, Whiro’s darkness begins to rise.',
+  13: 'Toi-o-ngā-Rangi, the twelfth heaven. The kete are close. So is Whiro.'
 };
 
 G.TIPS = [
-  'Hold toward a wall while falling to slide, then jump to kick off it.',
-  'Jump into a ledge to grab it. Push up to climb.',
+  'Some walls can be climbed: slide down them, then jump off.',
   'Strike from behind for a critical hit.',
   'Swing your taiaha at an incoming bolt to knock it away.',
   'Hold light to charge a stronger bolt. It costs more mana.',
   'Run, then crouch to slide under low gaps. Tunnels hide relics.',
   'Roll through attacks. You cannot be hurt mid-roll.',
-  'Heavy strikes break a guard. Hold up or down and strike.',
+  'A heavy strike breaks a guard.',
   'Carved pou save your journey and restore your health.',
-  'Greenstone relics raise your health. Feathers raise your mana.',
+  'Pounamu raises your health. Feathers raise your mana.',
   'Every heaven hides one carving. Look high and look behind walls.',
   'Watch for the glow before a guardian strikes.',
-  'Mana returns slowly, and faster as you land blows.'
+  'Mana is your light and your strength. It returns slowly, and faster as you land blows.'
 ];
 
 /* ================= CINEMATIC ENGINE ================= */
@@ -149,13 +148,13 @@ G.opening = done => C.play([
 /* ================= CHAPTER ================= */
 G.chapter = (n, done) => {
   const b = G.buildBiome(n);
-  const shots = [{ dur: 300, title: (n === 13 ? b.name : b.name.toUpperCase()) + ' · ' + b.sub, text: G.CHAPTER[n], draw: (ctx, t) => vignette(ctx, n, t, n * 60) }];
+  const shots = [{ dur: 300, title: b.name.toUpperCase() + ' · ' + b.sub, text: G.CHAPTER[n], draw: (ctx, t) => vignette(ctx, n, t, n * 60) }];
   C.play(shots, done);
 };
 
 /* ================= ENDING ================= */
 G.ending = done => {
-  const tr = [['Te Kete-Tuauri', 'Sacred and spiritual knowledge: ritual, prayer, and what lies beyond sight.'], ['Te Kete-Tuatea', 'The knowledge of ancestors and history, of light, darkness, and trial.'], ['Te Kete-Aronui', 'The arts and skills people need to live together in peace and care for the earth.']];
+  const tr = [['Te Kete Tuauri', 'Peace, love, and all things good.'], ['Te Kete Tuatea', 'Warfare and mākutu, and the crafts of food, wood, stone and earth.'], ['Te Kete Aronui', 'Karakia, literature, philosophy and ritual.']];
   const chamber = (ctx, t) => {
     grad(ctx, '#2a1a08', '#5a3a14');
     for (let i = 0; i < 6; i++) { const x = 30 + i * 66; ctx.fillStyle = '#3a2410'; ctx.fillRect(x, 40, 14, 150); for (let y = 46; y < 186; y += 9) { ctx.fillStyle = '#b8361f'; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 7, y + 5); ctx.lineTo(x + 14, y); ctx.fill(); ctx.fillStyle = '#efe6d2'; ctx.fillRect(x + 6, y + 1, 2, 2); } }
@@ -164,7 +163,7 @@ G.ending = done => {
   };
   const shots = [
     ...(G.pushShots ? G.pushShots(grad) : []),
-    { dur: 300, text: 'Whiro withdrew into the dark below, and looked back up once, alone. Tāne entered Matangireia, the house at the top of the heavens.', draw: (ctx, t, k) => { chamber(ctx, t); const sp = G.tane('walk', Math.floor(t / 5) % 8); ctx.drawImage(sp.r, 20 + k * 150, 124); } },
+    { dur: 300, text: 'Whiro withdrew into the dark below, and looked back up once, alone. In Matangireia, the house at the top of the heavens, Io-matua-kore gave Tāne the kete.', draw: (ctx, t, k) => { chamber(ctx, t); const sp = G.tane('walk', Math.floor(t / 5) % 8); ctx.drawImage(sp.r, 20 + k * 150, 124); } },
     ...tr.map(([name, text], i) => ({ dur: 280, title: name, text, sfx: 'relic', draw: (ctx, t, k) => {
       chamber(ctx, t); const sp = G.tane('collect', 0); ctx.drawImage(sp.r, 170, 124);
       const y = 40 + Math.min(1, k * 2) * 60; G.glow(ctx, VW / 2, y + 8, 40, '#f2c14e', .7); ctx.drawImage(G.itemSprite('kete').r, VW / 2 - 16, y - 8, 32, 32);
@@ -197,7 +196,7 @@ G.credits = done => {
     ['mono', 5, 'A GAME BY'], ['display', 10, 'Stacy'], ['gap'],
     ['mono', 5, 'STORY'], ['body', 6, 'The journey of Tāne-nui-a-Rangi to the uppermost heaven,'], ['body', 6, 'as it is told, in many forms, across Aotearoa.'], ['gap'],
     ['mono', 5, 'DESIGN, CODE, PIXEL ART AND SOUND'], ['body', 6, "Generated with Claude from Stacy's brief"], ['gap'],
-    ['mono', 5, 'A NOTE ON THE STORY'], ['body', 6, 'Tellings, names, and the number of heavens differ between iwi.'], ['body', 6, 'This game follows a common outline and claims no single authority.'], ['body', 6, 'Seek out the people who hold these stories.'], ['gap'],
+    ['mono', 5, 'A NOTE ON THE STORY'], ['body', 6, 'Tellings, names, and the number of heavens differ between iwi.'], ['body', 6, 'This game follows a common outline and claims no single authority.'], ['body', 6, 'Tradition says each heaven held its own tests. The tests in this game are imagined.'], ['body', 6, 'Seek out the people who hold these stories.'], ['gap'],
     
     ['mono', 5, 'COLLECTED'], ['body', 6, `${G.S.feathers} feathers · ${G.S.relics} greenstone relics · ${G.S.lore.length} of 13 carvings`], ['gap'], ['gap'],
     ['display', 12, 'Ngā mihi']

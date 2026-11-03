@@ -3,11 +3,11 @@
 const G = window.G, PI = Math.PI, T = 16;
 const B = G.Boss = { active: false, b: null, darkness: 0, lightScale: 1 };
 const INFO = {
-  ngarara: { name: 'Guardian Ngārara', line: 'Bound by Whiro to guard the third heaven. Its scales turn light aside. Make it charge the wall.', hp: 32, reward: 'dash' },
-  moonkeeper: { name: 'Keeper of the Moon Gate', line: 'Four moons shield its face. Strike them down with the taiaha, then strike the keeper.', hp: 30, reward: 'burst' },
-  champion: { name: "Whiro's Shadow Champion", line: 'It reads your blade. Strike after its lunge, from behind, or break its guard with a heavy blow.', hp: 36, reward: 'spear' },
+  ngarara: { name: 'Guardian Ngārara', line: 'Bound by Whiro to guard this heaven. Its scales turn light aside. Make it charge the wall.', hp: 32, reward: 'dash' },
+  moonkeeper: { name: 'Keeper of the Moon Gate', line: 'It tests all who climb and serves no one. Strike its four moons, then the keeper.', hp: 30, reward: 'burst' },
+  champion: { name: "Whiro's Shadow Champion", line: 'It blocks from the front. Strike after it lunges, from behind, or with a heavy strike.', hp: 36, reward: 'spear' },
   gatekeeper: { name: 'Gatekeeper of Toi-o-ngā-Rangi', line: 'Only the worthy pass. Its heart opens after it strikes the ground.', hp: 40, reward: null },
-  whiro: { name: 'Whiro', line: 'Elder brother. Lord of darkness. He will not let the baskets go.', hp: 120, reward: null }
+  whiro: { name: 'Whiro', line: 'The elder brother. He never forgave the parting. He will not let the kete go.', hp: 120, reward: null }
 };
 B.INFO = INFO;
 const P = () => G.World.P, L = () => G.World.L;

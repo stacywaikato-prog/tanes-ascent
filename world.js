@@ -103,8 +103,8 @@ W.SIGNS = {
   5: '{attack} strikes with the taiaha. Press it three times for a combo.',
   6: '{roll} rolls. You cannot be hurt mid-roll.',
   7: 'Hold {down} to crouch. Run, then {down} to slide under.',
-  8: '{light} throws light. Hold it to charge a stronger bolt.',
-  9: 'Strike the glyph stone to open the gate.',
+  8: '{light} throws light. It uses mana, your light and strength. Hold to charge.',
+  9: 'Strike the carved stone to open the gate.',
   10: 'Too high for one jump. {jump}, then {jump} again before you start to fall.'
 };
 W.TPL = TPL;
@@ -115,10 +115,10 @@ const ABIL_AT = { 2: 'wings', 3: 'dash', 5: 'shield', 6: 'burst', 9: 'spear' };
 W.ABIL_AT = ABIL_AT;
 G.ABIL = {
   wings: { name: 'Kerer\u016b Lift', text: 'The kerer\u016b you freed lifts you. Press {jump} again in mid-air.' },
-  dash: { name: 'Celestial Dash', text: 'Press {roll} in mid-air to dash.' },
-  shield: { name: 'Forest Shield', text: 'A ward of leaves absorbs one blow, then regrows. Nothing to press.' },
-  burst: { name: 'Mana Burst', text: 'Press {burst} (or hold {down} and press {light}) to release a burst of mana.' },
-  spear: { name: 'Star Spear', text: 'Hold {light} to charge. A charged bolt becomes a spear that pierces every foe.' }
+  dash: { name: 'Celestial Dash', text: 'The wind lifts you off the guardian. Press {roll} in mid-air to dash.' },
+  shield: { name: 'Forest Shield', text: 'Papatūānuku wraps you in the forest you gave her. It absorbs one blow, then regrows.' },
+  burst: { name: 'Mana Burst', text: 'Your mana rises like the tide. Press {burst} (or hold {down} and press {light}) to release it.' },
+  spear: { name: 'Star Spear', text: 'The light the birds carried back, made sharp. Hold {light} to charge a spear that pierces every foe.' }
 };
 
 /* ================= LEVEL GENERATION ================= */
@@ -455,7 +455,7 @@ W.hitSwitches = box => {
     G.fx.burst(sw.x + 6, sw.y + 6, '#f2c14e', 14, 2.2, { k: 'glow', g: 0 }); G.fx.ring(sw.x + 6, sw.y + 6, '#fff1c0', 18);
     if (sw.bird && W.onBirdFreed) W.onBirdFreed(sw);
     const group = L.switches.filter(q => q.g === sw.g), left = group.filter(q => !q.on).length;
-    if (left) { G.toast('Glyph stone', left + ' more to wake'); continue; }
+    if (left) { G.toast('Gate stones', left + ' more to wake'); continue; }
     for (const [X, Y] of (L.doors[sw.g] || [])) { L.g[Y][X] = 0; G.fx.burst(X * T + 8, Y * T + 8, '#c8b8a0', 4, 1.4); }
     G.audio.sfx('gateopen'); G.shake(5); G.toast('The gate opens');
   }
@@ -600,8 +600,8 @@ W.updateItems = () => {
     switch (it.k) {
       case 'mana': P.mana = Math.min(S.maxMana, P.mana + 12); S.score += 25; S.manaStones++; G.audio.sfx('mana'); G.fx.burst(cx, cy, '#7fe6f0', 8, 1.6, { k: 'glow', g: 0 }); break;
       case 'kumara': P.hp = Math.min(S.maxHp, P.hp + 30); S.score += 50; G.audio.sfx('heal'); G.fx.text(cx, cy - 6, '+30', '#7fd36a'); break;
-      case 'feather': S.feathers++; S.maxMana += 5; P.mana = S.maxMana; S.score += 500; S.got.push(it.id); G.audio.sfx('feather'); G.toast('Sacred feather', 'Mana grows. Maximum mana +5.'); G.fx.burst(cx, cy, '#efe6d2', 16, 2); break;
-      case 'relic': S.relics++; S.maxHp += 10; P.hp = S.maxHp; S.score += 800; S.got.push(it.id); G.audio.sfx('relic'); G.toast('Greenstone relic', 'Your body strengthens. Maximum health +10.'); G.fx.burst(cx, cy, '#58d39a', 18, 2); break;
+      case 'feather': S.feathers++; S.maxMana += 5; P.mana = S.maxMana; S.score += 500; S.got.push(it.id); G.audio.sfx('feather'); G.toast('Sacred feather', 'Your mana grows. Maximum mana +5.'); G.fx.burst(cx, cy, '#efe6d2', 16, 2); break;
+      case 'relic': S.relics++; S.maxHp += 10; P.hp = S.maxHp; S.score += 800; S.got.push(it.id); G.audio.sfx('relic'); G.toast('Pounamu', 'Your body strengthens. Maximum health +10.'); G.fx.burst(cx, cy, '#58d39a', 18, 2); break;
       case 'glyph': { S.glyphs = (S.glyphs || 0) + 1; S.got.push(it.id); S.score += 400; G.audio.sfx('relic'); G.fx.burst(cx, cy, '#f2c14e', 16, 2, { k: 'glow', g: 0 });
         P.hp = S.maxHp; G.audio.sfx('heal'); G.toast('Carved stone', 'The old words restore you. Health full.'); break; }
       case 'carving': if (!S.lore.includes(L.n)) S.lore.push(L.n); S.got.push(it.id); S.score += 1000; G.audio.sfx('carving'); G.audio.duck(.5, 1.2, 1); P.collectT = 40; G.openLore(L.n, true); break;
@@ -775,7 +775,7 @@ W.whiroPresence = (ctx, cx, cy, t) => {
   }
   if (L.n === 6 && !L.whiroSpoke && prog > .45 && G.S.mode === 'play') {
     L.whiroSpoke = true; G.audio.sfx('roar', .35); G.audio.duck(.4, 1.5, 2); G.shake(2);
-    G.toast('\u201cThe baskets are mine by birth, little brother.\u201d', 'Whiro, somewhere in the dark');
+    G.toast('\u201cYou tore our parents apart. The kete are mine by birth.\u201d', 'Whiro, the elder brother, somewhere in the dark');
   }
 };
 W.drawPlayer = (ctx, cx, cy, t) => {

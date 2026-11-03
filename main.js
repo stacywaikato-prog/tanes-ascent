@@ -278,7 +278,7 @@ function hud() {
   const panel = (x, w) => { ctx.fillStyle = '#050304'; ctx.fillRect(x, PH + 7, w, 30); ctx.fillStyle = '#2a1a14'; ctx.fillRect(x, PH + 7, w, 1); ctx.fillRect(x, PH + 36, w, 1); };
   // left: score + collectibles
   panel(4, 160);
-  { const bb = G.BIOMES[s.n]; G.txt(s.n === 13 ? 'TOI-O-NGĀ-RANGI' : 'RANGI ' + s.n, 10, PH + 15, { size: 3.6, font: 'mono', color: '#8f7f70', shadow: false }); G.txt(bb ? bb.sub : '', 10, PH + 25, { size: 4.4, font: 'body', color: '#efe6d2', shadow: false, maxW: 58 }); }
+  { const bb = G.BIOMES[s.n]; G.txt(bb ? bb.name.toUpperCase() : '', 10, PH + 15, { size: 3.6, font: 'mono', color: '#8f7f70', shadow: false }); G.txt(bb ? bb.sub : '', 10, PH + 25, { size: 4.4, font: 'body', color: '#efe6d2', shadow: false, maxW: 58 }); }
   const col = [['feather', s.feathers], ['relic', s.relics], ['carving', s.lore.length + '/13'], ['glyph', s.glyphs || 0]];
   col.forEach(([k, v], i) => { const x = 72 + i * 23; ctx.drawImage(G.icon(k).r, x, PH + 11); G.txt(String(v), x + 6, PH + 33, { size: 4, font: 'mono', color: '#c8b8a0', align: 'center', shadow: false }); });
   // centre: portrait
@@ -297,7 +297,7 @@ function hud() {
   bar(238, PH + 20, 70, P ? P.mana / s.maxMana : 1, '#3ab8c8', '#a8f4ff', 'MANA');
   G.txt(`${Math.ceil(P ? P.hp : s.maxHp)}/${s.maxHp}`, 310, PH + 15.6, { size: 3.6, font: 'mono', color: '#c8b8a0', shadow: false });
   G.txt(`${Math.floor(P ? P.mana : s.maxMana)}/${s.maxMana}`, 310, PH + 24.6, { size: 3.6, font: 'mono', color: '#c8b8a0', shadow: false });
-  G.txt('RANGI', 345, PH + 13, { size: 3.6, font: 'mono', color: '#8f7f70', shadow: false }); G.txt(s.n === 13 ? 'TOI' : String(s.n).padStart(2, '0'), 345, PH + 22, { size: 6.5, font: 'mono', color: '#f2c14e', shadow: false });
+  G.txt(s.n === 1 ? 'PAPA' : 'RANGI', 345, PH + 13, { size: 3.6, font: 'mono', color: '#8f7f70', shadow: false }); G.txt(s.n === 1 ? '—' : String(s.n - 1).padStart(2, '0'), 345, PH + 22, { size: 6.5, font: 'mono', color: '#f2c14e', shadow: false });
   // abilities
   ['wings', 'dash', 'shield', 'burst', 'spear'].forEach((a, i) => { const x = 222 + i * 14, y = PH + 26; ctx.globalAlpha = s.ab.includes(a) ? 1 : .18; ctx.drawImage(a === 'wings' ? G.kereruSprite(0).r : G.icon(a).r, x, y); ctx.globalAlpha = 1; if (a === 'shield' && s.ab.includes(a) && P && P.shieldT > 0) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x, y + 12 - P.shieldT / 600 * 12, 12, P.shieldT / 600 * 12); } });
   // kete + whatu-kura goals
@@ -352,14 +352,14 @@ function render() {
 function drawSummary() {
   const z = summary, k = ease(z.t / 30); dim(.7 * k);
   ctx.fillStyle = `rgba(18,11,12,${.96 * k})`; ctx.fillRect(72, 26, 240, 160); ctx.fillStyle = '#c2452a'; ctx.fillRect(72, 26, 240, 2); ctx.fillRect(72, 184, 240, 2);
-  G.txt((z.n === 13 ? 'TOI-O-NGĀ-RANGI' : 'RANGI ' + z.n) + ' \u00b7 THE WORLD BELOW', VW / 2, 46, { size: 11, font: 'display', color: '#f2c14e', align: 'center', alpha: k });
+  G.txt(G.BIOMES[z.n].name.toUpperCase() + ' \u00b7 THE WORLD BELOW', VW / 2, 46, { size: 11, font: 'display', color: '#f2c14e', align: 'center', alpha: k });
   ctx.save(); ctx.globalAlpha = k; G.drawWorldBelow(ctx, 92, 56, 200, 80, z.n - 1 + G.clamp((z.t - 20) / 60, 0, 1) * (z.t > 20 ? 1 : 0) >= z.n - .5 ? z.n : z.n - 1, t); ctx.restore();
   G.txt(WORLD_LINE[z.n] || '', VW / 2, 148, { size: 5.4, font: 'body', color: '#efe6d2', align: 'center', alpha: ease((z.t - 70) / 20) });
   G.txt('Secrets found ' + z.found + ' of ' + z.total + '  ·  ' + fmtTime(z.secs), VW / 2, 162, { size: 4, font: 'mono', color: '#8f7f70', align: 'center', alpha: ease((z.t - 80) / 20) });
   if (z.t > 90) drawMenu(MENU.summary(), VW / 2, 178, 140);
 }
 /* the world below (Papatūānuku), shown after each heaven: it changes because of the climb */
-const WORLD_LINE = { 1: 'Below, the first shoots break the bare earth.', 2: 'Birds fly down to the world below.', 3: 'Rain falls softly on the young forest.', 4: 'Rivers begin to run.', 5: 'Forest spreads across the land.', 6: 'The tides begin to move.', 7: 'Stars appear over the land.', 8: 'The seasons begin to turn.', 9: 'The long night lifts. Dawn returns below.', 10: 'Mountains rise from the shaking land.', 11: 'The people gather and light their fires.', 12: 'Daylight spreads over the whole world.' };
+const WORLD_LINE = { 1: 'Light reaches the world below. The first shoots break the earth.', 2: 'Birds fly down to the world below.', 3: 'Rain falls softly on the young forest.', 4: 'Rivers begin to run.', 5: 'Forest spreads across the land.', 6: 'The tides begin to move.', 7: 'Stars appear over the land.', 8: 'The seasons begin to turn.', 9: 'The long night lifts. Dawn returns below.', 10: 'Rūaumoko stirs. Mountains rise from the shaking land.', 11: 'The people gather and light their fires.', 12: 'Daylight spreads over the whole world.' };
 G.WORLD_LINE = WORLD_LINE;
 G.drawWorldBelow = (ctx, x, y, w, h, stage, tt) => {
   const st = G.clamp(stage, 0, 13), night = st === 8 || st === 9 ? .6 : 0;
@@ -397,7 +397,7 @@ function progressBar() {
   if (L.arena) { ctx.fillStyle = '#c2452a'; ctx.beginPath(); ctx.moveTo(bx + w, y - 4); ctx.lineTo(bx + w + 4, y); ctx.lineTo(bx + w, y + 4); ctx.lineTo(bx + w - 4, y); ctx.fill(); }
   else { ctx.fillStyle = '#efe6d2'; ctx.fillRect(bx + w - 3, y - 4, 1, 5); ctx.fillRect(bx + w + 2, y - 4, 1, 5); ctx.fillRect(bx + w - 4, y - 5, 8, 1); }
   const px = bx + w * k; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(px - 3, y - 5); ctx.lineTo(px + 3, y - 5); ctx.lineTo(px, y - 1); ctx.fill();
-  G.txt((S().n === 13 ? 'TOI' : 'RANGI ' + S().n), bx - 8, y + 2, { size: 3.8, font: 'mono', color: '#c8b8a0', align: 'right' });
+  G.txt(G.heavenShort(S().n).toUpperCase(), bx - 8, y + 2, { size: 3.8, font: 'mono', color: '#c8b8a0', align: 'right' });
   G.txt(Math.round(k * 100) + '%', bx + w + 9, y + 2, { size: 3.8, font: 'mono', color: '#f2c14e' });
 }
 function worldPrompts() {
@@ -410,7 +410,7 @@ function worldPrompts() {
   for (const gi in L.doors) { const d = L.doors[gi], X = d[0][0] * T + 8; if (L.g[d[0][1]][d[0][0]] !== 6 || Math.abs(px - X) > 150) continue;
     const left = L.switches.filter(q => q.g == gi && !q.on), a = G.clamp((150 - Math.abs(px - X)) / 40, 0, 1);
     const gy = Math.max(...d.map(q => q[1])) * T - 30; tag(X, gy, 'SEALED GATE');
-    G.txt(left.some(q => q.bird) ? 'Free the trapped kerer\u016b: strike its cage' : 'Wake ' + (left.length === 1 ? 'the carved stone' : 'all ' + left.length + ' carved stones') + ' with a strike or a light bolt', X - cam.x, gy - cam.y + 7, { size: 3.8, font: 'body', color: '#efe6d2', align: 'center', alpha: a });
+    G.txt(left.some(q => q.bird) ? 'Whiro\u2019s swarm caged a kerer\u016b: strike the cage' : 'Wake ' + (left.length === 1 ? 'the carved stone' : 'all ' + left.length + ' carved stones') + ' with a strike or a light bolt', X - cam.x, gy - cam.y + 7, { size: 3.8, font: 'body', color: '#efe6d2', align: 'center', alpha: a });
     for (const q of left) { const sx = q.x + 6 - cam.x, sy = q.y - 10 - cam.y + (calm() ? 0 : Math.sin(t * .15) * 2); ctx.fillStyle = `rgba(242,193,78,${a})`; ctx.beginPath(); ctx.moveTo(sx - 4, sy - 5); ctx.lineTo(sx + 4, sy - 5); ctx.lineTo(sx, sy); ctx.fill(); } }
   if (!G.prefs.hints) return;
   if (L.gate && L.gate.open && Math.abs(px - (L.gate.x + 24)) < 90) tag(L.gate.x + 24, L.gate.y - 72, '▲ ASCEND');
@@ -449,7 +449,7 @@ function drawPopup() {
 function drawLore() {
   dim(.9); const s = S(), list = Object.keys(G.LORE).map(Number), n = list[loreSel], have = s.lore.includes(n);
   G.txt('LORE BOOK', 44, 15, { size: 10, font: 'display', color: '#f2c14e' }); G.txt(s.lore.length + ' of 13 carvings found', 20, 32, { size: 4.2, font: 'mono', color: '#8f7f70' });
-  list.forEach((k, i) => { const y = 44 + i * 13, sel = i === loreSel, got = s.lore.includes(k); if (sel) { ctx.fillStyle = 'rgba(194,69,42,.8)'; ctx.fillRect(16, y - 8, 110, 11); } G.txt((k === 13 ? 'Toi' : 'Rangi ' + k) + ' · ' + (got ? G.LORE[k].t : '???'), 20, y, { size: 4.3, font: 'body', color: sel ? '#fff' : got ? '#d9ccb8' : '#5a4a44', maxW: 104 }); });
+  list.forEach((k, i) => { const y = 44 + i * 13, sel = i === loreSel, got = s.lore.includes(k); if (sel) { ctx.fillStyle = 'rgba(194,69,42,.8)'; ctx.fillRect(16, y - 8, 110, 11); } G.txt(G.heavenShort(k) + ' · ' + (got ? G.LORE[k].t : '???'), 20, y, { size: 4.3, font: 'body', color: sel ? '#fff' : got ? '#d9ccb8' : '#5a4a44', maxW: 104 }); });
   if (have) { G.drawLoreIllustration(ctx, n, 140, 20, 228, 80, t); G.txt(G.LORE[n].t, 140, 114, { size: 9, font: 'display', color: '#f2c14e', maxW: 228 }); G.txt(G.LORE[n].b, 140, 128, { size: 5.2, font: 'body', color: '#efe6d2', maxW: 228, lh: 7.6 }); }
   else { ctx.fillStyle = '#140c0e'; ctx.fillRect(140, 20, 228, 80); G.txt('This carving has not been found.', 254, 64, { size: 5, font: 'body', color: '#6a5a54', align: 'center' }); G.txt('Look for carved panels hidden in Rangi ' + (n === 13 ? '13 (Toi-o-ngā-Rangi)' : n) + '.', 140, 118, { size: 5, font: 'body', color: '#8f7f70', maxW: 228 }); }
   list.forEach((k, i) => addHit(16, 44 + i * 13 - 9, 110, 12, () => { if (loreSel !== i) { loreSel = i; G.audio.sfx('select'); } }));
@@ -469,12 +469,12 @@ function drawControls() {
       ['Mana Burst (once earned)', T ? 'BURST, or stick down + LIGHT' : 'LT, or down + Y'],
       ['Roll · Celestial Dash (in air)', T ? 'ROLL' : 'B or RB'],
       ['Slide · brace against wind', T ? 'Stick down (running · standing)' : 'Down (running · standing)'],
-      ['Grow seeds · moon stones · cages', T ? 'STRIKE or LIGHT' : 'X or Y'],
+      ['Strike seeds, moon stones, cages', T ? 'STRIKE or LIGHT' : 'X or Y'],
       ['Push (opening and ending)', T ? 'Press and hold anywhere' : 'Hold A'],
       ['Lore book · menu', T ? 'LORE · \u275a\u275a' : 'Select · Start']];
     rr.forEach(([a, b], i) => { G.txt(a, 40, 46 + i * 11.4, { size: 4.6, font: 'body', color: '#d9ccb8' }); G.txt(b, 344, 46 + i * 11.4, { size: 4.6, font: 'mono', color: '#f2c14e', align: 'right' }); }); backBtn(); return; }
   const K = a => G.keys.list(a), L1 = a => G.keys.label(a);
-  const rows = [['Move', K('left') + ' / ' + K('right')], ['Climb vines / look', K('up') + ' / ' + K('down')], ['Jump · wall jump · Kerer\u016b Lift', K('jump')], ['Taiaha strike (3-hit combo)', K('attack')], ['Heavy strike', L1('heavy') + ', or ' + L1('up') + '/' + L1('down') + ' + ' + L1('attack')], ['Air strike', L1('attack') + ' while jumping'], ['Light bolt · hold to charge (Star Spear)', K('light')], ['Mana Burst', L1('burst') + ', or ' + L1('down') + ' + ' + L1('light')], ['Roll · Celestial Dash in air', K('roll')], ['Crouch · slide when running · brace', L1('down')], ['Drop through a branch', L1('down') + ' + ' + L1('jump')], ['Grab ledge', 'Jump into a ledge, ' + L1('up') + ' to climb'], ['Seeds · moon stones · cages', L1('attack') + ' or ' + L1('light')], ['Push (opening and ending)', 'Hold ' + L1('jump')], ['Lore book', K('lore')], ['Pause', K('pause')], ['Change keys', 'Settings → Keyboard keys']];
+  const rows = [['Move', K('left') + ' / ' + K('right')], ['Climb vines / look', K('up') + ' / ' + K('down')], ['Jump · wall jump · Kerer\u016b Lift', K('jump')], ['Taiaha strike (3-hit combo)', K('attack')], ['Heavy strike', L1('heavy') + ', or ' + L1('up') + '/' + L1('down') + ' + ' + L1('attack')], ['Air strike', L1('attack') + ' while jumping'], ['Light bolt · hold to charge (Star Spear)', K('light')], ['Mana Burst', L1('burst') + ', or ' + L1('down') + ' + ' + L1('light')], ['Roll · Celestial Dash in air', K('roll')], ['Crouch · slide when running · brace', L1('down')], ['Drop through a branch', L1('down') + ' + ' + L1('jump')], ['Grab ledge', 'Jump into a ledge, ' + L1('up') + ' to climb'], ['Strike seeds, moon stones, cages', L1('attack') + ' or ' + L1('light')], ['Push (opening and ending)', 'Hold ' + L1('jump')], ['Lore book', K('lore')], ['Pause', K('pause')], ['Change keys', 'Settings → Keyboard keys']];
   rows.forEach(([a, b], i) => { G.txt(a, 50, 42 + i * 8.6, { size: 4.2, font: 'body', color: '#d9ccb8' }); G.txt(b, 334, 42 + i * 8.6, { size: 4.2, font: 'mono', color: '#f2c14e', align: 'right' }); });
   G.txt(G.prompt('back') + ' to go back', VW / 2, VH - 8, { size: 4, font: 'mono', color: '#8f7f70', align: 'center' }); backBtn();
 }
