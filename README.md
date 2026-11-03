@@ -67,3 +67,7 @@ Ask each tester to play, then open **Settings → Saves and playtest → Playtes
 ## A note on the story
 
 Tellings, names and the number of heavens differ between iwi. This game follows a common outline and claims no single authority. Have the text reviewed by someone who holds these kōrero before release. See `docs/CULTURAL_REVIEW.md`.
+
+## Licence
+
+Copyright © 2026 Stacy. All rights reserved. You can play the game and share the link. You cannot copy, change, re-publish or sell any of it without permission. The fonts keep their own Open Font License. See [LICENSE](LICENSE) for the details.

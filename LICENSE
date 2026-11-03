@@ -1,0 +1,35 @@
+Tāne's Ascent: Ngā Kete o te Wānanga
+Copyright © 2026 Stacy (stacywaikato-prog). All rights reserved.
+
+This repository is public so people can play and test the game. That does not
+make it free to reuse.
+
+YOU MAY
+- Play the game, including the version hosted on GitHub Pages.
+- Share links to the game or to this repository.
+- Share screenshots or short video clips of yourself playing, if you credit the game.
+
+YOU MAY NOT, without the copyright holder's written permission
+- Copy, change, translate or build on the code, art, music, sound, story
+  text or design, in whole or in part.
+- Re-publish, re-host or redistribute the game or any part of it, including
+  on any app store or game site.
+- Sell the game or any part of it, or use it in anything that is sold.
+- Use the name "Tāne's Ascent" or its artwork for another product.
+
+ABOUT THE STORIES
+The pūrākau (traditional Māori stories) the game draws on belong to Māori,
+not to any one person, and this licence makes no claim to own them. What is
+protected here is this particular telling: the writing, characters,
+artwork, music, code and design of this game.
+
+THIRD-PARTY FONTS
+The fonts in the fonts/ folder (IBM Plex and Oswald) are not covered by this
+licence. Each one keeps its own SIL Open Font License; see
+fonts/OFL-IBM-Plex.txt and fonts/OFL-Oswald.txt.
+
+THERE IS NO WARRANTY
+The game is provided "as is", without warranty of any kind.
+
+For permission requests, contact the copyright holder through GitHub:
+https://github.com/stacywaikato-prog
