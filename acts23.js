@@ -212,8 +212,8 @@ W.heavenUpdate = t => {
       f.raised = true; const n = f.last ? 5 : 1; L.allies = L.allies || [];
       for (let i = 0; i < n; i++) L.allies.push({ x: f.x - i * 14, y: f.y + T - 22, vx: 0, vy: 0, face: 1, t: i * 7, hit: 0 });
       G.audio.sfx('power', f.last ? 1 : .6); G.fx.burst(f.x + 8, f.y + 8, '#fff1c0', f.last ? 40 : 18, 2.6, { k: 'glow', g: 0 });
-      if (f.last) { G.weather.flash = .5; G.shake(4); G.toast('All the ancestors rise', 'They stand with Tāne. They will hold the line below while he climbs.'); }
-      else G.toast('An ancestor rises', 'A figure of light stands beside Tāne.');
+      if (f.last) { G.weather.flash = .5; G.shake(4); G.toast('Tāne’s whakapapa rises', 'The generations of Te Pō hold back Whiro while Tāne climbs.'); }
+      else G.toast('An ancestor rises', 'From Te Pō, one of Tāne’s whakapapa stands beside him.');
     }
     if (L.allies) for (const a of L.allies) allyAI(L, P, a);
   }

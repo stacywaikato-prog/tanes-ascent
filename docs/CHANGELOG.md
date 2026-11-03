@@ -24,6 +24,7 @@ Stacy's decisions as cultural lead, based on the Knowledge Basket legend and Tim
 - **Moon Keeper** tests all who climb and serves no one.
 - **Tips updated:** out-of-date tips are fixed and a duplicate is removed.
 - **Credits** now say the tests in each heaven are imagined for this game.
+- **The ancestors who rise in Rangi Tuangahuru** are the generations of Te Pō, Tāne's own whakapapa. The first carving now says Tāne descends from them, and the chapter card sets them up.
 
 ## 1.0.4-beta — 3 November 2026: sound on phones
 

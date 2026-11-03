@@ -5,7 +5,7 @@ const VW = 384, PH = 200;
 
 /* ================= LORE (one carving per heaven, one in Toi-o-ngā-Rangi) ================= */
 G.LORE = {
-  1: { t: 'Te Kore and Te Pō', b: 'Before anything stood, there was Te Kore, the nothingness, and then Te Pō, the long night. Many whakapapa recite these ages of darkness before the world of light.' },
+  1: { t: 'Te Kore and Te Pō', b: 'Before anything stood, there was Te Kore, the nothingness, and then Te Pō, the long night. Many whakapapa recite these ages of darkness before the world of light. Tāne descends from them.' },
   2: { t: 'Ranginui and Papatūānuku', b: 'The sky father and the earth mother lay clasped together. Their children were born and grew in the cramped dark between their bodies, with no room to stand.' },
   3: { t: 'The children of Rangi and Papa', b: 'Among the children were Tāne of the forests and birds, Tangaroa of the sea, Tūmatauenga of people and war, Rongo of cultivated food, Haumia-tiketike of wild food, Tāwhirimātea of the winds, and Whiro.' },
   4: { t: 'Tāwhirimātea', b: 'Not every child wanted the parents parted. Tāwhirimātea went with his father into the sky, and his storms still answer the separation. This heaven carries his anger.' },
@@ -32,7 +32,7 @@ G.CHAPTER = {
   8: 'The sky moves like a living cloak. Mana gathers in storms of colour.',
   9: 'Black vines, cold mist, creatures twisted out of shape. Whiro has taken hold here.',
   10: 'This heaven is breaking apart. Carved houses drift in pieces, and any handhold may give way.',
-  11: 'Light and darkness are at war. Tāne must cross the battlefield to go higher.',
+  11: 'Light and darkness are at war. Here, the generations of Te Pō that Tāne descends from wait to stand with him.',
   12: 'Gold light and open gates. Behind Tāne, Whiro’s darkness begins to rise.',
   13: 'Toi-o-ngā-Rangi, the twelfth heaven. The kete are close. So is Whiro.'
 };
