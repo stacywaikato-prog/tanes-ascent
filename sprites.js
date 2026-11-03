@@ -137,8 +137,9 @@ const CR = {
   liz: { a: '#3f7a46', b: '#2a5232', c: '#7fbf6a', e: '#f2c14e' },
   lizC: { a: '#4a2a5a', b: '#2a1634', c: '#8a4aa8', e: '#ff4a3a' },
   weta: { a: '#7a4a24', b: '#4a2a14', c: '#b07a40', e: '#f0d0a0' },
-  bird: { a: '#2a2230', b: '#16121c', c: '#5a4a6a', e: '#ff4a3a' },
-  mos: { a: '#2a2228', b: '#140f14', c: '#6a5a62', e: '#c2452a' }
+  bird: { a: '#3a2a20', b: '#1a120c', c: '#5e4632', e: '#ff4a3a' },
+  mos: { a: '#2a2228', b: '#140f14', c: '#6a5a62', e: '#c2452a' },
+  bat: { a: '#3a2a22', b: '#1e1410', c: '#5a4234', e: '#ff4a3a' }
 };
 function lizard(px, f, C, w = 30) {
   const leg = f % 4, by = 8;
@@ -169,11 +170,18 @@ G.enemySprite = (type, f = 0, v = '') => {
     bird: [24, 18, px => {
       const C = CR.bird, wf = [-6, -2, 3, 0][f % 4], dive = v === 'd';
       px.ell(12, 9, 6, 3, C.a); px.ell(17, 7, 3, 3, C.a); px.p(18, 6, C.e);
-      px.poly([[20, 7], [23, 8], [20, 9]], '#c2a04a');
+      px.poly([[20, 6], [23, 7], [23, 10], [21, 9], [20, 9]], '#c2a04a');   // hooked carrion beak
       px.l(6, 9, 1, 8, C.b, 2); px.l(6, 10, 1, 12, C.b, 1);
       if (dive) { px.poly([[9, 8], [3, 3], [14, 7]], C.c); }
       else { px.poly([[9, 8], [6, 8 + wf], [15, 8 + wf * .8], [15, 8]], C.c); px.l(7, 8 + wf, 14, 8 + wf * .8, C.b); }
       px.p(10, 12, C.b); px.p(14, 12, C.b);
+    }],
+    bat: [18, 12, px => {   // pekapeka: small brown body, membrane wings; hangs upside down when roosting
+      const C = CR.bat;
+      if (v === 'h') { px.l(9, 0, 9, 2, C.b); px.ell(9, 6, 2, 4, C.a); px.poly([[7, 3], [5, 10], [9, 9]], C.b); px.poly([[11, 3], [13, 10], [9, 9]], C.b); px.p(8, 9, C.e); px.p(10, 9, C.e); return; }
+      const up = f % 2; px.ell(9, 6, 2, 3, C.a); px.p(8, 4, C.e); px.p(10, 4, C.e); px.p(8, 2, C.c); px.p(10, 2, C.c);
+      if (up) { px.poly([[7, 5], [0, 0], [2, 6], [7, 7]], C.b); px.poly([[11, 5], [18, 0], [16, 6], [11, 7]], C.b); }
+      else { px.poly([[7, 5], [0, 9], [3, 11], [7, 8]], C.b); px.poly([[11, 5], [18, 9], [15, 11], [11, 8]], C.b); }
     }],
     mos: [14, 12, px => {
       const C = CR.mos; px.l(3, 6, 9, 6, C.a, 2); px.ell(5, 6, 2, 2, C.b); px.l(10, 6, 13, 8, '#3a2a32'); px.p(9, 5, C.e);

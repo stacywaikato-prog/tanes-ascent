@@ -88,7 +88,7 @@ let summary = null, setPage = 'root', capture = null, modeT = 0, lastMode = '', 
 G.cam = cam; let audioMode = 'boot';
 G.shake = n => { if (G.prefs.shake && !calm()) shakeAmt = Math.max(shakeAmt, n); };
 G.hitstop = n => { hitstopN = Math.max(hitstopN, n); };
-G.toast = (a, b = '') => { const ex = toasts.find(q => q.a === a && q.b === b); if (ex) { ex.t = Math.max(ex.t, 120); return; } toasts.push({ a, b, t: 240 }); if (toasts.length > 4) toasts.shift(); };
+G.toast = (a, b = '') => { const ex = toasts.find(q => q.a === a && q.b === b); if (ex) { ex.t = Math.max(ex.t, 120); return; } toasts.push({ a, b, t: 240 }); if (toasts.length > 2) toasts.shift(); };
 G.bossBanner = txt => { banner = { txt, t: 150 }; G.audio.sfx('phase'); G.audio.duck(.55, .9, 1.2); };
 G.slowmo = 0; G.flash = 0; G.fade = 0;
 
@@ -237,7 +237,7 @@ function update() {
     case 'summary': summary && summary.t++; if (summary && summary.t > 90) runMenu(MENU.summary()); break;
     case 'crashed': runMenu(MENU.crashed()); break;
     case 'lore': {
-      const n = s.lore.length ? Math.max(...s.lore) : 0; const list = Object.keys(G.LORE).map(Number);
+      const n = s.lore.length ? Math.max(...s.lore) : 0; const list = [...Object.keys(G.LORE).map(Number), 'kupu'];
       if (G.tap('down') || G.tap('right')) { loreSel = (loreSel + 1) % list.length; G.audio.sfx('select'); }
       if (G.tap('up') || G.tap('left')) { loreSel = (loreSel - 1 + list.length) % list.length; G.audio.sfx('select'); }
       if (G.tap('back') || G.tap('pause') || G.tap('lore') || G.tap('ok')) { G.audio.sfx('back'); s.mode = prevMode === 'play' ? 'play' : prevMode; menuSel = 0; }
@@ -446,13 +446,24 @@ function drawPopup() {
   }
   if (p.t > 30) G.txt(G.input.last === 'touch' ? 'Tap to continue' : 'Press ' + G.prompt('ok') + ' to continue', VW / 2, 160, { size: 4, font: 'mono', color: '#8f7f70', align: 'center', alpha: .6 + .4 * Math.sin(t * .1) });
 }
+const KUPU = [['Ranginui, Rangi', 'the sky father'], ['Papatūānuku, Papa', 'the earth mother'], ['Te Kore', 'the nothingness, before all'], ['Te Pō', 'the long night'], ['Te Ao Mārama', 'the world of light'],
+  ['Whiro', 'Tāne’s elder brother, of darkness'], ['rangi', 'sky; one of the twelve heavens'], ['Toi-o-ngā-Rangi', 'the twelfth, highest heaven'], ['Io-matua-kore', 'the parentless one, in some tellings'], ['kete', 'basket'],
+  ['wānanga', 'knowledge, learning'], ['whare wānanga', 'house of learning'], ['whatu-kura', 'sacred stones of knowledge'], ['whakapapa', 'genealogy, line of descent'], ['tūpuna', 'ancestors'],
+  ['mana', 'power and authority; here, Tāne’s light and strength'], ['tapu', 'sacred, set apart'], ['karakia', 'prayer, incantation'], ['mākutu', 'harmful magic'], ['taiaha', 'long wooden fighting staff'],
+  ['pou', 'carved post'], ['pounamu', 'greenstone'], ['kererū', 'native wood pigeon'], ['ngārara', 'lizard, reptile'], ['pekapeka', 'native bat'], ['Tahu-nui-a-Rangi', 'the aurora, great glow of the sky']];
+function drawKupu() {
+  G.txt('KUPU · WORDS IN THIS STORY', 140, 20, { size: 5, font: 'mono', color: '#c2452a' });
+  KUPU.forEach(([w, m], i) => { const col = i < 13 ? 0 : 1, row = i % 13, x = 140 + col * 116, y = 30 + row * 12.8;
+    G.txt(w, x, y, { size: 4.4, font: 'body', color: '#f2c14e', maxW: 110 }); G.txt(m, x, y + 5.6, { size: 3.8, font: 'body', color: '#d9ccb8', maxW: 112 }); });
+}
 function drawLore() {
-  dim(.9); const s = S(), list = Object.keys(G.LORE).map(Number), n = list[loreSel], have = s.lore.includes(n);
+  dim(.9); const s = S(), list = [...Object.keys(G.LORE).map(Number), 'kupu'], n = list[loreSel], have = s.lore.includes(n);
   G.txt('LORE BOOK', 44, 15, { size: 10, font: 'display', color: '#f2c14e' }); G.txt(s.lore.length + ' of 13 carvings found', 20, 32, { size: 4.2, font: 'mono', color: '#8f7f70' });
-  list.forEach((k, i) => { const y = 44 + i * 13, sel = i === loreSel, got = s.lore.includes(k); if (sel) { ctx.fillStyle = 'rgba(194,69,42,.8)'; ctx.fillRect(16, y - 8, 110, 11); } G.txt(G.heavenShort(k) + ' · ' + (got ? G.LORE[k].t : '???'), 20, y, { size: 4.3, font: 'body', color: sel ? '#fff' : got ? '#d9ccb8' : '#5a4a44', maxW: 104 }); });
-  if (have) { G.drawLoreIllustration(ctx, n, 140, 20, 228, 80, t); G.txt(G.LORE[n].t, 140, 114, { size: 9, font: 'display', color: '#f2c14e', maxW: 228 }); G.txt(G.LORE[n].b, 140, 128, { size: 5.2, font: 'body', color: '#efe6d2', maxW: 228, lh: 7.6 }); }
-  else { ctx.fillStyle = '#140c0e'; ctx.fillRect(140, 20, 228, 80); G.txt('This carving has not been found.', 254, 64, { size: 5, font: 'body', color: '#6a5a54', align: 'center' }); G.txt('Look for carved panels hidden in Rangi ' + (n === 13 ? '13 (Toi-o-ngā-Rangi)' : n) + '.', 140, 118, { size: 5, font: 'body', color: '#8f7f70', maxW: 228 }); }
-  list.forEach((k, i) => addHit(16, 44 + i * 13 - 9, 110, 12, () => { if (loreSel !== i) { loreSel = i; G.audio.sfx('select'); } }));
+  list.forEach((k, i) => { const y = 42 + i * 11.4, sel = i === loreSel, got = s.lore.includes(k); if (sel) { ctx.fillStyle = 'rgba(194,69,42,.8)'; ctx.fillRect(16, y - 7.5, 110, 10.5); } G.txt(k === 'kupu' ? 'Kupu · Words in this story' : G.heavenShort(k) + ' · ' + (got ? G.LORE[k].t : '???'), 20, y, { size: 4.3, font: 'body', color: sel ? '#fff' : got || k === 'kupu' ? '#d9ccb8' : '#5a4a44', maxW: 104 }); });
+  if (n === 'kupu') drawKupu();
+  else if (have) { G.drawLoreIllustration(ctx, n, 140, 20, 228, 80, t); G.txt(G.LORE[n].t, 140, 114, { size: 9, font: 'display', color: '#f2c14e', maxW: 228 }); G.txt(G.LORE[n].b, 140, 128, { size: 5.2, font: 'body', color: '#efe6d2', maxW: 228, lh: 7.6 }); }
+  else { ctx.fillStyle = '#140c0e'; ctx.fillRect(140, 20, 228, 80); G.txt('This carving has not been found.', 254, 64, { size: 5, font: 'body', color: '#6a5a54', align: 'center' }); G.txt('Look for carved panels hidden in ' + G.BIOMES[n].name + (n === 13 ? ' (Toi-o-ngā-Rangi)' : '') + '.', 140, 118, { size: 5, font: 'body', color: '#8f7f70', maxW: 228 }); }
+  list.forEach((k, i) => addHit(16, 42 + i * 11.4 - 8, 110, 11, () => { if (loreSel !== i) { loreSel = i; G.audio.sfx('select'); } }));
   G.txt(G.prompt('nav') + ' choose · ' + G.prompt('back') + ' close', VW - 10, VH - 8, { size: 4, font: 'mono', color: '#8f7f70', align: 'right' });
   backBtn(() => { S().mode = prevMode === 'play' ? 'play' : prevMode; menuSel = 0; });
 }

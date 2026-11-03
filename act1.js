@@ -188,7 +188,17 @@ W.heavenUpdate = () => {
   // Rangi 4: Tāwhirimātea's storm
   if (L.n === 4) storm(L, P);
 };
+function crackedAhead(L, P) { const X0 = Math.floor(P.x / T); for (let y = 0; y < L.g.length; y++) for (let x = X0; x < L.g[y].length; x++) if (L.g[y][x] === 8) return true; return false; }
 function storm(L, P) {
+  // near the gate, once no cracked stone is left ahead, the winds turn: they blow Whiro's swarm away (the truce)
+  if (!L.truce && L.gate && P.x > L.gate.x - 170 && !crackedAhead(L, P)) { L.truce = 1; L.swarm = []; P.lock = 150;
+    for (let i = 0; i < 46; i++) L.swarm.push({ x: P.x + 150 + Math.random() * 140, y: P.y - 70 + Math.random() * 90, vx: -1.2 - Math.random(), ph: Math.random() * 7 });
+    G.audio.sfx('screech', .5); G.toast('Whiro sends his swarm', ''); }
+  if (L.truce) { L.truce++; L.gust = 0; L.strike = null; P.braced = false;
+    if (L.truce === 60) { G.audio.sfx('wind', 1); G.audio.sfx('power', .6); G.weather.flash = .3; G.shake(2); G.toast('The winds turn', 'They blow Whiro’s swarm away. A truce, not forgiveness.');
+      for (const e of L.enemies) if (!e.dead && Math.abs(e.x - P.x) < 420 && (e.type === 'bird' || e.type === 'mos' || e.type === 'bat')) { e.dead = true; G.fx.burst(e.x + e.w / 2, e.y + e.h / 2, '#8a8aa0', 10, 2.4); } }
+    if (L.swarm) for (const m of L.swarm) { if (L.truce < 60) { m.x += m.vx; m.y += Math.sin(L.truce * .3 + m.ph) * .8; } else { m.vx = Math.min(m.vx + .35, 9); m.x += m.vx; m.y -= .4 + Math.sin(m.ph) * .6; } }
+    return; }
   const c = L.ht % 420; L.gust = c >= 70 && c < 170 ? 2 : c < 70 ? 1 : 0;
   if (c === 0) G.audio.sfx('wind', .5); if (c === 70) { G.audio.sfx('wind', 1); G.shake(1); }
   P.braced = false;
@@ -231,7 +241,7 @@ W.heavenFront = (ctx, cx, cy, t) => {
   const L = W.L, P = W.P; if (!L) return;
   // seeds and grown ferns
   if (L.seeds) for (const s of L.seeds) { const x = s.x - cx, y = s.y - cy; if (x < -20 || x > G.VW + 20) continue;
-    if (!s.grown) { ctx.fillStyle = '#5a3a1a'; ctx.fillRect(x + 3, y + 9, 6, 3); ctx.fillStyle = '#7fd36a'; ctx.fillRect(x + 5, y + 4 + Math.sin(t * .1) * .5, 2, 6); ctx.fillRect(x + 3, y + 5, 2, 2); ctx.fillRect(x + 7, y + 4, 2, 2); G.glow(ctx, x + 6, y + 7, 10, '#9ae86a', .25 + .15 * Math.sin(t * .08)); }
+    if (!s.grown) { ctx.fillStyle = '#5a3a1a'; ctx.fillRect(x + 3, y + 9, 6, 3); ctx.fillStyle = '#7fd36a'; ctx.fillRect(x + 5, y + 4 + Math.sin(t * .1) * .5, 2, 6); ctx.fillRect(x + 3, y + 5, 2, 2); ctx.fillRect(x + 7, y + 4, 2, 2); G.glow(ctx, x + 6, y + 7, 10, '#9ae86a', .25 + .15 * Math.sin(t * .08)); G.hitCue(ctx, x + 6, y + 7, t); }
     else { ctx.fillStyle = '#3f8a3a'; ctx.fillRect(x + 1, y + 6, 10, 6); ctx.fillStyle = '#6aaa4a'; ctx.fillRect(x + 2, y + 4, 3, 3); ctx.fillRect(x + 7, y + 3, 3, 3); } }
   if (L.n === 1) { // grey, sleeping forest ahead; light rain (Ranginui's grief)
     const ex = Math.round((L.wake || 0) - cx);
@@ -241,7 +251,12 @@ W.heavenFront = (ctx, cx, cy, t) => {
   if (L.n === 2 && L.canopyY !== undefined && P) { // dark under the canopy, open sky above it
     const d = G.clamp((P.y - L.canopyY) / 120, 0, 1); if (d > 0) { ctx.fillStyle = `rgba(4,18,10,${.42 * d})`; ctx.fillRect(0, 0, G.VW, G.PH); }
   }
-  if (L.n === 4) { // gust streaks, lightning telegraph, brace pose cue
+  if (L.n === 4 && L.truce) { // the winds have turned: warm streaks blowing forward, the swarm swept away
+    const k = Math.min(1, Math.max(0, (L.truce - 60) / 30)); ctx.fillStyle = `rgba(255,236,190,${.6 * k})`;
+    for (let i = 0; i < 36; i++) { const rr = G.rng(i * 29 + 3); const x = ((t * (8 + rr() * 6) + rr() * 900) % (G.VW + 60)) - 40, y = rr() * G.PH; ctx.fillRect(x, y, 18 + rr() * 20, 2); }
+    if (L.swarm) for (const m of L.swarm) { const x = m.x - cx, y = m.y - cy; if (x < -10 || x > G.VW + 10) continue; G.glow(ctx, x + 1, y + 1, 4, '#c2452a', .25); ctx.fillStyle = '#8a7a82'; ctx.fillRect(x, y, 3, 2); ctx.fillStyle = 'rgba(240,235,250,.85)'; ctx.fillRect(x + (Math.floor(t / 2 + m.ph) % 2), y - 2, 2, 2); }
+  }
+  if (L.n === 4 && !L.truce) { // gust streaks, lightning telegraph, brace pose cue
     const n = L.gust === 2 ? 46 : L.gust === 1 ? 10 : 0; ctx.fillStyle = 'rgba(220,230,255,.35)';
     for (let i = 0; i < n; i++) { const rr = G.rng(i * 17 + 1); const x = (G.VW - ((t * (9 + rr() * 6) + rr() * 900) % (G.VW + 60))), y = rr() * G.PH; ctx.fillRect(x, y, 14 + rr() * 16, 1); }
     if (L.strike && L.strike.t < 56) { const s = L.strike, x = s.x - cx, a = .25 + .5 * (s.t / 56) * (.6 + .4 * Math.sin(s.t * .6)); ctx.fillStyle = `rgba(232,232,255,${a * .35})`; ctx.fillRect(x - 8, 0, 16, s.y - cy); G.glow(ctx, x, s.y - cy - 2, 16, '#e8e8ff', a); }

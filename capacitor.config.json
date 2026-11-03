@@ -1,0 +1,7 @@
+{
+  "appId": "nz.tanesascent.game",
+  "appName": "Tāne's Ascent",
+  "webDir": "www",
+  "android": { "backgroundColor": "#0b0708" },
+  "plugins": { "SplashScreen": { "launchShowDuration": 0 } }
+}

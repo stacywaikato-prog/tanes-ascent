@@ -110,7 +110,7 @@ W.SIGNS = {
 W.TPL = TPL;
 W.chunkById = id => TPL.find(t => t.id === id) || TUT.find(t => t.id === id) || Object.values(SETS).find(t => t.id === id);
 
-const CAT = { ground: ['liz', 'lizC', 'weta', 'guard', 'guardC', 'warrior', 'beast'], fly: ['bird', 'mos', 'spirit'], hang: ['spider', 'spiderC', 'horror'], amb: ['stalk'], heavy: ['warrior', 'guard', 'guardC'] };
+const CAT = { ground: ['liz', 'lizC', 'weta', 'guard', 'guardC', 'warrior', 'beast'], fly: ['bird', 'mos', 'spirit', 'bat'], hang: ['spider', 'spiderC', 'horror', 'bat'], amb: ['stalk'], heavy: ['warrior', 'guard', 'guardC'] };
 const ABIL_AT = { 2: 'wings', 3: 'dash', 5: 'shield', 6: 'burst', 9: 'spear' };
 W.ABIL_AT = ABIL_AT;
 G.ABIL = {
@@ -210,12 +210,17 @@ W.gen = (n, S) => {
   return L;
 };
 
+/* the shared cue for anything Tāne should strike: seeds, gate stones, moon stones, cages */
+G.hitCue = (ctx, x, y, t, r = 9) => { const k = (t % 70) / 70; ctx.save(); ctx.strokeStyle = '#f2c14e'; ctx.lineWidth = 1;
+  ctx.globalAlpha = .55 * (1 - k); ctx.beginPath(); ctx.arc(Math.round(x) + .5, Math.round(y) + .5, r + k * 6, 0, 7); ctx.stroke(); ctx.restore(); };
+
 /* ================= ENEMIES ================= */
 const STATS = {
   liz: { w: 22, h: 10, hp: 3, dmg: 12, sp: .5, pts: 100, cat: 'ground' },
   weta: { w: 16, h: 12, hp: 3, dmg: 12, sp: .4, pts: 120, cat: 'ground' },
   bird: { w: 16, h: 10, hp: 2, dmg: 12, sp: 1.1, pts: 150, cat: 'fly' },
   mos: { w: 9, h: 7, hp: 1, dmg: 8, sp: .9, pts: 60, cat: 'fly' },
+  bat: { w: 12, h: 8, hp: 2, dmg: 10, sp: 1.2, pts: 140, cat: 'hang' },
   spirit: { w: 14, h: 18, hp: 4, dmg: 14, sp: .5, pts: 200, cat: 'fly' },
   spider: { w: 16, h: 12, hp: 3, dmg: 14, sp: .6, pts: 160, cat: 'hang' },
   stalk: { w: 18, h: 12, hp: 4, dmg: 16, sp: 1, pts: 220, cat: 'amb' },
@@ -230,6 +235,7 @@ W.mkEnemy = (type, x, y, n, anchor) => {
   const e = { type, v, x, y: y + T - s.h, w: s.w, h: s.h, vx: 0, vy: 0, hp: Math.max(1, Math.round(s.hp * (1 + (n - 1) * .08) * G.diff().enemyHp)), dmg: Math.round(s.dmg * sc), sp: s.sp * Math.min(1.6, sc), pts: s.pts, face: -1, t: Math.random() * 100, st: 'idle', stT: 0, flash: 0, kb: 0, on: false, hx: x, hy: y, n };
   if (type === 'spider') { e.anchor = anchor || y - 60; e.y = e.anchor + 20; e.st = 'hang'; }
   if (type === 'stalk') { e.st = 'hidden'; }
+  if (type === 'bat') { if (anchor) { e.anchor = anchor; e.y = anchor; e.st = 'roost'; } else { e.st = 'fly'; e.stT = 90; } }   // pekapeka: one of Whiro's creatures, roosting until Tāne comes near
   if (type === 'horror') { e.anchor = anchor || y - 60; e.y = e.anchor; e.st = 'lurk'; }
   return e;
 };
@@ -520,6 +526,13 @@ W.updateEnemies = () => {
         else { e.x = e.hx + Math.sin(e.t * .02) * 40; e.y = e.hy - 20 + Math.sin(e.t * .05) * 8; e.face = Math.cos(e.t * .02) > 0 ? 1 : -1; if (dist < 140 && dy > 0 && e.stT <= 0) { e.st = 'dive'; e.stT = 50; const a = Math.atan2(dy, dx); e.vx = Math.cos(a) * 3.2; e.vy = Math.sin(a) * 3.2; e.face = Math.sign(dx) || 1; G.audio.sfx('screech', 1, { x: e.x }); } }
         if (e.kb) { e.x += e.kb; } break;
       }
+      case 'bat': {
+        if (e.st === 'roost') { e.y = e.anchor; if (dist < 120) { e.st = 'fly'; e.stT = 70; G.audio.sfx('chirp', .7, { x: e.x, p: 1.8 }); } }
+        else if (e.st === 'away') { e.x -= e.face * e.sp * 1.4; e.y -= .6 + Math.sin(e.t * .4) * 1.2; if (e.stT <= 0) { e.st = 'fly'; e.stT = 90; } }
+        else if (dist > 200) { e.x = e.hx + Math.sin(e.t * .05) * 24; e.y = e.hy - 24 + Math.cos(e.t * .08) * 10; }
+        else { e.face = Math.sign(dx) || 1; const dd = Math.max(1, dist); e.x += dx / dd * e.sp * 1.3 + Math.sin(e.t * .35) * 1.4; e.y += dy / dd * e.sp + Math.cos(e.t * .3) * 1.6; if (e.stT <= 0 || dist < 12) { e.st = 'away'; e.stT = 34; } }
+        if (e.kb) e.x += e.kb * 2; break;
+      }
       case 'mos': { W.mosD = Math.min(W.mosD, dist);
         if (dist < 170) { e.x += dx / dist * e.sp + Math.sin(e.t * .3) * .8; e.y += dy / dist * e.sp + Math.cos(e.t * .27) * .8; e.face = Math.sign(dx) || 1; }
         else { e.x = e.hx + Math.sin(e.t * .04) * 10; e.y = e.hy + Math.sin(e.t * .09) * 6; }
@@ -674,8 +687,8 @@ W.draw = (ctx, cam, t) => {
   }
   // updraft shimmer
   for (const u of L.updrafts) { const x = u.x - cx, y = u.y - cy; if (x < -20 || x > G.VW) continue; for (let i = 0; i < 4; i++) { const yy = (t * 2 + i * 44) % u.h; ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(x + 3 + i * 3, y + u.h - yy, 1, 10); } }
-  // glyph stones and carved signs
-  for (const sw of L.switches) { const x = sw.x - cx - 1, y = sw.y - cy - 2 + (sw.on ? 0 : Math.sin(t * .05 + sw.x) * 1); if (x < -40 || x > G.VW + 40) continue; if (sw.bird) { W.drawCage && W.drawCage(ctx, sw, sw.x - cx, sw.y - cy, t); continue; } ctx.drawImage(stoneSprite(sw.on).r, x, y); if (!sw.on) G.glow(ctx, x + 7, y + 8, 9, '#f2c14e', .18 + .12 * Math.sin(t * .1)); }
+  // gate stones and carved signs (one shared 'strike this' cue)
+  for (const sw of L.switches) { const x = sw.x - cx - 1, y = sw.y - cy - 2 + (sw.on ? 0 : Math.sin(t * .05 + sw.x) * 1); if (x < -40 || x > G.VW + 40) continue; if (sw.bird) { W.drawCage && W.drawCage(ctx, sw, sw.x - cx, sw.y - cy, t); if (!sw.on) G.hitCue(ctx, sw.x - cx + 8, sw.y - cy + 8, t, 13); continue; } ctx.drawImage(stoneSprite(sw.on).r, x, y); if (!sw.on) { G.glow(ctx, x + 7, y + 8, 9, '#f2c14e', .18 + .12 * Math.sin(t * .1)); G.hitCue(ctx, x + 7, y + 8, t); } }
   for (const sg of L.signs) { const x = sg.x - cx, y = sg.y - cy; if (x < -20 || x > G.VW + 20) continue; ctx.drawImage(signSprite().r, x, y); }
   // pou + gate + shrine
   for (const p of L.pous) { const x = p.x - cx, y = p.y - cy; if (x < -20 || x > G.VW + 20) continue; ctx.drawImage(G.pouSprite(p.lit).r, x, y); }
@@ -691,6 +704,7 @@ W.draw = (ctx, cam, t) => {
     if (e.type === 'weta') f = e.st === 'crouch' ? 2 : e.on ? 0 : 1;
     if (e.type === 'bird') v = e.st === 'dive' ? 'd' : '';
     if (e.type === 'mos') f = Math.floor(e.t / 2) % 2;
+    if (e.type === 'bat') { v = e.st === 'roost' ? 'h' : ''; f = Math.floor(e.t / 3) % 2; }
     if (e.type === 'spirit') f = Math.floor(e.t / 6) % 3;
     if (e.type === 'stalk') { v = e.st === 'hidden' ? 'h' : ''; f = e.st === 'lunge' ? 2 : Math.floor(e.t / 8) % 2; }
     if (e.type === 'spider') { if (e.st === 'hang' || e.st === 'drop') { ctx.strokeStyle = 'rgba(230,230,230,.35)'; ctx.beginPath(); ctx.moveTo(sx + e.w / 2, e.anchor - cy); ctx.lineTo(sx + e.w / 2, sy); ctx.stroke(); } f = Math.floor(e.t / 6) % 2; }

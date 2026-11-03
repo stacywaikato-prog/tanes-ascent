@@ -11,7 +11,7 @@
 const G = window.G, W = G.World, T = 16;
 const prev = { genChar: W.genChar, update: W.heavenUpdate, back: W.heavenBack, front: W.heavenFront, hit: W.hitHeaven };
 
-W.SIGNS[14] = 'Throw {light} into the dark. It leaves a path of stars.';
+W.SIGNS[14] = 'Throw {light} into the dark. Each star Tāne sets on his father becomes a step.';
 W.SIGNS[15] = 'Step into the still pool to see this heaven as it once was.';
 W.SIGNS[16] = 'Strike a moon stone to turn the moon. The tide follows it.';
 W.SIGNS[17] = 'Leap into an aurora ribbon and it will carry you.';
@@ -155,7 +155,7 @@ function unstick() { const P = W.P; for (let k = 0; k < 4 && (W.solid(P.x + 2, P
 W.onBolt = bl => {
   const L = W.L; if (!L || L.n !== 7) return;
   const X = Math.floor((bl.x + bl.w / 2) / T), Y = Math.floor((bl.y + 14) / T);
-  if (L.g[Y] && L.g[Y][X] === 0) { L.g[Y][X] = 14; (L.stars = L.stars || {})[X + ',' + Y] = 260; G.fx.add({ x: X * T + 8, y: Y * T, c: '#c8b8ff', k: 'glow', s: 1, life: 20, g: 0 }); }
+  if (L.g[Y] && L.g[Y][X] === 0) { if (!G.S.starOnce) { G.S.starOnce = true; G.toast('Tāne dresses his father in stars', 'Each star rests on Rangi a while, then fades.'); } L.g[Y][X] = 14; (L.stars = L.stars || {})[X + ',' + Y] = 260; G.fx.add({ x: X * T + 8, y: Y * T, c: '#c8b8ff', k: 'glow', s: 1, life: 20, g: 0 }); }
 };
 
 /* ---------------- per frame ---------------- */
@@ -181,7 +181,7 @@ W.heavenUpdate = t => {
   if (L.ribbons) {
     if (L.ride) { const rb = L.ride; P.st = 'dash'; P.stT = 3; P.face = 1; P.y += ((rb.y + 4) - P.y) * .2; P.dashed = false; P.dj = false;
       if (P.x > rb.x + rb.w) { L.ride = null; P.st = 'normal'; P.vx = 3; P.vy = -2; } }
-    else if (!P.on) for (const rb of L.ribbons) if (G.hit(P, rb) && P.x < rb.x + rb.w - 20) { L.ride = rb; G.audio.sfx('dash'); G.audio.sfx('lightmote', .6, { p: 1.4 }); if (!G.S.ribbonOnce) { G.S.ribbonOnce = true; G.toast('The aurora carries you', ''); } break; }
+    else if (!P.on) for (const rb of L.ribbons) if (G.hit(P, rb) && P.x < rb.x + rb.w - 20) { L.ride = rb; G.audio.sfx('dash'); G.audio.sfx('lightmote', .6, { p: 1.4 }); if (!G.S.ribbonOnce) { G.S.ribbonOnce = true; G.toast('Tahu-nui-a-Rangi carries you', 'The aurora, the great glow of the sky.'); } break; }
   }
   if (L.n === 8 && !L.torn && prog(L, P) > .86) { L.torn = 1; G.weather.flash = .8; G.audio.sfx('roar', .6); G.shake(5); G.toast('Darkness tears through the aurora', 'Whiro has reached the heavens.'); }
   if (L.torn) L.torn = Math.min(120, L.torn + 1);
@@ -192,7 +192,8 @@ W.heavenUpdate = t => {
     else {
       if (!L.whiroT && P.x > L.start.x + 90 && (L.birdsX === undefined || P.x < L.birdsX - 60)) { L.whiroT = 1; P.lock = 200; G.audio.sfx('roar', .8); G.audio.duck(.3, 3, 2); }
       if (L.whiroT) { L.whiroT++; if (L.whiroT === 140) { W.noLight = true; G.audio.sfx('pdeath', .5); G.shake(6); G.toast('Whiro takes the light', '“Stay in the dark, little brother.” He leaves Tāne alive.'); } }
-      if (L.whiroT > 140) { W.noLight = true; W.lightMul = .3; W.extraDark = .32; }
+      if (L.whiroT > 140) { W.noLight = true; W.lightMul = .3; W.extraDark = .32;
+        const on = G.btn('light') || G.btn('burst'); if (on && !L.fizPrev && !P.lock) { G.audio.sfx('lightmote', .4, { p: .5 }); G.fx.burst(P.x + 5 + P.face * 8, P.y + 10, '#5a5a62', 6, .8); if (!L.fizOnce) { L.fizOnce = true; G.toast('No light answers', 'Whiro holds it now.'); } } L.fizPrev = on; }
       if (L.birdsX !== undefined && P.x > L.birdsX - 20 && !L.birdsT) { L.birdsT = 1; P.lock = 160; G.audio.sfx('feather'); }
       if (L.birdsT) { L.birdsT++; if (L.birdsT === 120) { G.S.r9lit = true; W.noLight = false; G.audio.sfx('power'); G.audio.sfx('treasure'); G.weather.flash = .5; G.toast('The birds bring back the light', 'The kererū Tāne freed returns with the forest birds.'); } }
     }
@@ -210,12 +211,12 @@ W.heavenUpdate = t => {
   if (L.fallen) {
     for (const f of L.fallen) if (!f.raised && Math.abs(P.x + 5 - (f.x + 8)) < 18 && Math.abs(P.y + P.h - (f.y + T)) < 24) {
       f.raised = true; const n = f.last ? 5 : 1; L.allies = L.allies || [];
-      for (let i = 0; i < n; i++) L.allies.push({ x: f.x - i * 14, y: f.y + T - 22, vx: 0, vy: 0, face: 1, t: i * 7, hit: 0 });
+      for (let i = 0; i < n; i++) L.allies.push({ x: f.x + 3 - i * 14, y: f.y + T - 22, vx: 0, vy: 0, face: 1, t: i * 7, hit: 0, em: -i * 10 });
       G.audio.sfx('power', f.last ? 1 : .6); G.fx.burst(f.x + 8, f.y + 8, '#fff1c0', f.last ? 40 : 18, 2.6, { k: 'glow', g: 0 });
       if (f.last) { G.weather.flash = .5; G.shake(4); G.toast('Tāne’s whakapapa rises', 'The generations of Te Pō hold back Whiro while Tāne climbs.'); }
       else G.toast('An ancestor rises', 'From Te Pō, one of Tāne’s whakapapa stands beside him.');
     }
-    if (L.allies) for (const a of L.allies) allyAI(L, P, a);
+    if (L.allies) for (const a of L.allies) { if (a.em < 40) { a.em++; continue; } allyAI(L, P, a); }
   }
   // Rangi 12: Whiro's darkness rises from below
   if (L.n === 12 && G.S.mode === 'play') {
@@ -254,7 +255,7 @@ W.heavenFront = (ctx, cx, cy, t) => {
   if (L.pools) for (const pl of L.pools) { const x = pl.x - cx, y = pl.y - cy; ctx.fillStyle = 'rgba(200,184,255,.6)'; ctx.fillRect(x - 6, y + 6, T + 12, 2); G.glow(ctx, x + 8, y + 6, 14, '#c8b8ff', .35 + .15 * Math.sin(t * .08)); }
   if (L.mirror) { ctx.save(); ctx.globalCompositeOperation = 'hue'; ctx.fillStyle = 'rgba(120,96,220,.55)'; ctx.fillRect(0, 0, G.VW, G.PH); ctx.restore(); ctx.fillStyle = 'rgba(200,184,255,.07)'; ctx.fillRect(0, 0, G.VW, G.PH); }
   // moon stones and the tide
-  if (L.moons) for (const m of L.moons) { const x = m.x - cx, y = m.y - cy; ctx.fillStyle = '#26324a'; ctx.beginPath(); ctx.arc(x + 6, y + 6, 7, 0, 7); ctx.fill(); ctx.fillStyle = '#e8f0ff'; ctx.beginPath(); ctx.arc(x + 6, y + 6, 5, 0, 7); ctx.fill(); if (!L.phase) { ctx.fillStyle = '#26324a'; ctx.beginPath(); ctx.arc(x + 8, y + 5, 5, 0, 7); ctx.fill(); } G.glow(ctx, x + 6, y + 6, 12, '#bcd7ff', .3); }
+  if (L.moons) for (const m of L.moons) { const x = m.x - cx, y = m.y - cy; ctx.fillStyle = '#26324a'; ctx.beginPath(); ctx.arc(x + 6, y + 6, 7, 0, 7); ctx.fill(); ctx.fillStyle = '#e8f0ff'; ctx.beginPath(); ctx.arc(x + 6, y + 6, 5, 0, 7); ctx.fill(); if (!L.phase) { ctx.fillStyle = '#26324a'; ctx.beginPath(); ctx.arc(x + 8, y + 5, 5, 0, 7); ctx.fill(); } G.glow(ctx, x + 6, y + 6, 12, '#bcd7ff', .3); G.hitCue(ctx, x + 6, y + 6, t, 10); }
   if (L.n === 6 && L.tide !== undefined) { const h = 14 + L.tide * 50; ctx.fillStyle = 'rgba(80,120,190,.28)'; ctx.fillRect(0, G.PH - h, G.VW, h); ctx.fillStyle = 'rgba(200,220,255,.35)'; ctx.fillRect(0, G.PH - h, G.VW, 1); }
   // stars dying behind (Rangi 7)
   if (L.n === 7 && L.dimX) { const x = L.dimX - cx; if (x > 0) { const g = ctx.createLinearGradient(0, 0, x, 0); g.addColorStop(0, 'rgba(0,0,0,.6)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, x, G.PH); } }
@@ -265,6 +266,10 @@ W.heavenFront = (ctx, cx, cy, t) => {
   // Whiro in Rangi 9, and the birds
   if (L.n === 9 && L.whiroT && L.whiroT < 220 && !G.S.r9lit) { const k = Math.min(1, L.whiroT / 40) * (L.whiroT > 180 ? (220 - L.whiroT) / 40 : 1), w = G.bossSprite('whiro', Math.floor(t / 8) % 4, L.whiroT > 100 && L.whiroT < 150 ? 'c' : '');
     ctx.save(); ctx.globalAlpha = k; ctx.drawImage(w.l, P.x - cx + 40, P.y - cy - 60, 72, 90); ctx.restore(); if (L.whiroT > 110 && L.whiroT < 150) { G.glow(ctx, P.x + 5 - cx, P.y + 10 - cy, 30, '#ff3a2a', .6); } }
+  if (L.n === 9 && L.whiroT > 96 && L.whiroT < 146 && !G.S.r9lit) { const hx = P.x - cx + 62, hy = P.y - cy - 14;   // the light is drawn out of Tāne into Whiro's hand
+    for (let i = 0; i < 14; i++) { const k = ((L.whiroT - 96) / 50 + i / 14) % 1, sx = P.x + 5 - cx, sy = P.y + 10 - cy, x = sx + (hx - sx) * k, y = sy + (hy - sy) * k - Math.sin(k * Math.PI) * 18; G.glow(ctx, x, y, 5, '#fff1c0', .8 * (1 - k * .5)); ctx.fillStyle = '#fff8e0'; ctx.fillRect(Math.round(x), Math.round(y), 1, 1); }
+    G.glow(ctx, hx, hy, 10 + (L.whiroT - 96) * .3, '#fff1c0', .5); }
+  if (L.n === 9 && W.noLight) { ctx.save(); ctx.globalCompositeOperation = 'saturation'; ctx.globalAlpha = .75; ctx.fillStyle = '#808080'; ctx.fillRect(0, 0, G.VW, G.PH); ctx.restore(); }
   if (L.n === 9 && W.noLight && W.kereru && !L.birdsT) { const k = W.kereru, a = .35 + .35 * Math.abs(Math.sin(t * .1)); G.glow(ctx, k.x - cx + 18, k.y - cy, 10, '#9ae86a', a); }
   if (L.n === 9 && L.birdsT && L.birdsT < 200) { const k = Math.min(1, L.birdsT / 110);
     for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2 + t * .02, r = (1 - k) * 220 + 18, sp = G.kereruSprite(Math.floor(t / 4 + i) % 2);
@@ -272,7 +277,9 @@ W.heavenFront = (ctx, cx, cy, t) => {
     if (L.birdsT > 110) G.glow(ctx, P.x + 5 - cx, P.y + 10 - cy, 60, '#fff1c0', Math.max(0, 1 - (L.birdsT - 110) / 90)); }
   // Rangi 11: fallen pou and the ancestors
   if (L.fallen) for (const f of L.fallen) { const x = f.x - cx, y = f.y - cy; if (!f.raised) { ctx.save(); ctx.translate(x + 8, y + 14); ctx.rotate(-1.2); ctx.drawImage(G.pouSprite(0).r, -8, -30); ctx.restore(); G.glow(ctx, x + 8, y + 10, 14, '#fff1c0', .25 + .15 * Math.sin(t * .1)); } else ctx.drawImage(G.pouSprite(1).r, x, y + T - 36); }
-  if (L.allies) for (const a of L.allies) { const sp = G.tane(a.hit > 0 ? 'atk1' : Math.abs(a.vx) > .2 ? 'run' : 'idle', a.hit > 0 ? 2 : Math.floor(a.t / 6) % (Math.abs(a.vx) > .2 ? 8 : 4)); ctx.save(); ctx.globalAlpha = .75; ctx.drawImage(G.tint(a.face > 0 ? sp.r : sp.l, '#fff1c0'), Math.round(a.x + 5 - 24 - cx), Math.round(a.y + 22 - 44 - cy)); ctx.restore(); }
+  if (L.allies) for (const a of L.allies) { if (a.em < 0) continue; const em = Math.min(1, a.em / 40), sp = G.tane(a.hit > 0 ? 'atk1' : Math.abs(a.vx) > .2 ? 'run' : 'idle', a.hit > 0 ? 2 : Math.floor(a.t / 6) % (Math.abs(a.vx) > .2 ? 8 : 4));
+    if (em < 1) G.glow(ctx, a.x + 5 - cx, a.y + 4 - cy, 24, '#fff1c0', .6 * (1 - em));   // stepping out of the carving
+    ctx.save(); ctx.globalAlpha = .75 * em; ctx.drawImage(G.tint(a.face > 0 ? sp.r : sp.l, '#fff1c0'), Math.round(a.x + 5 - 24 - cx), Math.round(a.y + 22 - 44 - cy)); ctx.restore(); }
   // Rangi 12: the rising darkness
   if (L.n === 12 && L.riseY !== undefined) { const y = L.riseY - cy; if (y < G.PH + 40) { const g = ctx.createLinearGradient(0, y - 30, 0, y + 20); g.addColorStop(0, 'rgba(20,4,28,0)'); g.addColorStop(1, 'rgba(12,2,18,.96)'); ctx.fillStyle = g; ctx.fillRect(0, y - 30, G.VW, 50); ctx.fillStyle = 'rgba(12,2,18,.96)'; ctx.fillRect(0, y + 20, G.VW, Math.max(0, G.PH - y)); for (let i = 0; i < 18; i++) { const x = (i * 23 + t * .7) % G.VW; G.glow(ctx, x, y + Math.sin(t * .05 + i) * 6, 8, '#7a1d9a', .4); } G.glow(ctx, G.VW * .6, y + 10, 8, '#ff3a2a', .5); G.glow(ctx, G.VW * .6 + 10, y + 10, 8, '#ff3a2a', .5); } }
 };
@@ -285,7 +292,7 @@ G.pushShots = grad => [{ dur: 99999, hold: true, text: 'Whiro’s darkness rises
   const dy = 120 + k * 60; ctx.fillStyle = 'rgba(12,2,18,.95)'; ctx.fillRect(0, dy, 384, 200); for (let i = 0; i < 16; i++) G.glow(ctx, (i * 26 + t) % 384, dy + Math.sin(t * .05 + i) * 5, 10, '#7a1d9a', .5);
   const sp = G.tane('burst', 0); ctx.drawImage(sp.r, 168, 90); } }];
 const HOME = { 12: 'Down through the golden summit, its gates open.', 11: 'Across the battlefield, now quiet. The ancestors raise their hands.', 10: 'Through the broken heaven, whole again.', 9: 'Through Whiro’s heaven, where the black vines have flowered.',
-  8: 'The aurora, mended, ripples overhead.', 7: 'Every star along the paths is lit.', 6: 'The moon guardian lights the way down.', 5: 'The still pool. In it, Tāne sees only the world ahead.',
+  8: 'Tahu-nui-a-Rangi, mended, ripples overhead.', 7: 'Every star along the paths is lit.', 6: 'The moon guardian lights the way down.', 5: 'The still pool. In it, Tāne sees only the world ahead.',
   4: 'The storm parts to let him pass. A truce, not forgiveness.', 3: 'Ngārara sleeps in the clouds.', 2: 'The great tree is full of birds.', 1: 'Rain falls softly on a green forest. Rangi’s grief has become growth.' };
 G.homeShots = vignette => Object.keys(HOME).map(Number).sort((a, b) => b - a).map(n => ({ dur: 130, title: n === 13 ? '' : G.BIOMES[n].name.toUpperCase(), titleSize: 9,
   text: HOME[n] + (G.S.lore && G.S.lore.includes(n) ? ' The carving he found there glows as he passes.' : ''), draw: (ctx, t) => { vignette(ctx, n, t * 3, n * 60); } }));

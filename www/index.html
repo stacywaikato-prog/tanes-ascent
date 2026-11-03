@@ -1,0 +1,147 @@
+<title>Tāne's Ascent</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* layout: one game cabinet column; touch controls and notes beneath */
+:root{
+  --bg:#0a0607; --panel:#150d0d; --line:#3a2420; --fg:#efe6d2; --muted:#a8998a;
+  --ochre:#c2452a; --gold:#f2c14e; --jade:#58d39a;
+  --display:'Oswald',Impact,'Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:1100px;margin:0 auto;display:grid;gap:12px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4.5vw,40px);letter-spacing:.05em;text-transform:uppercase;margin:0;line-height:1;text-wrap:balance}
+h1 span{color:var(--ochre)}
+.sub{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--gold);margin:0;text-transform:uppercase}
+.cab{position:relative;width:min(100%, calc((100vh - 24px) * 1.6));width:min(100%, calc((100svh - 24px) * 1.6));margin-inline:auto;aspect-ratio:384/240;max-width:100%;background:#000;border:2px solid var(--line);box-shadow:0 0 0 6px var(--panel)}
+.cab canvas{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain}
+.cab:fullscreen,.cab:-webkit-full-screen{width:100vw;height:100vh;max-width:none;aspect-ratio:auto;border:0;box-shadow:none}
+/* PUBG Mobile-style overlay: floating stick on the left, round actions on the right, shown only on touch screens during play */
+#touch{position:absolute;inset:0;display:none;pointer-events:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+@media (pointer:coarse){.cab[data-mode=play] #touch{display:block}}
+#stickZone{position:absolute;left:0;top:18%;width:46%;bottom:0;pointer-events:auto;touch-action:none}
+.stick{position:absolute;left:20%;top:62%;width:clamp(84px,22vmin,130px);aspect-ratio:1;margin:calc(clamp(84px,22vmin,130px)/-2) 0 0 calc(clamp(84px,22vmin,130px)/-2);border-radius:50%;border:2px solid rgba(239,230,210,.35);background:rgba(10,6,8,.28);opacity:.55;transition:opacity .15s}
+.stick.on{opacity:1}
+.knob{position:absolute;left:50%;top:50%;width:44%;aspect-ratio:1;margin:-22% 0 0 -22%;border-radius:50%;background:rgba(239,230,210,.55);box-shadow:0 0 12px rgba(242,193,78,.35)}
+.tb{position:absolute;pointer-events:auto;touch-action:none;border-radius:50%;border:2px solid rgba(239,230,210,.45);background:rgba(10,6,8,.42);color:var(--fg);font-family:var(--mono);font-weight:700;font-size:clamp(9px,1.6vmin,12px);letter-spacing:.04em;width:clamp(52px,13vmin,78px);aspect-ratio:1;-webkit-tap-highlight-color:transparent;padding:0}
+.tb.on{background:rgba(194,69,42,.75);border-color:var(--gold);transform:scale(.94)}
+.tb.big{width:clamp(66px,17vmin,100px);right:4%;bottom:22%;color:var(--gold)}
+.tb.a{right:calc(4% + clamp(66px,17vmin,100px) + 10px);bottom:20%}
+.tb.l{right:calc(4% + clamp(66px,17vmin,100px) + 4px);bottom:calc(20% + clamp(52px,13vmin,78px) + 8px);color:#7fe6f0}
+.tb.r{right:5%;bottom:calc(22% + clamp(66px,17vmin,100px) + 10px)}
+.tb.s{width:clamp(44px,11vmin,64px);font-size:clamp(8px,1.4vmin,11px)}
+.tb.hv{right:calc(4% + clamp(66px,17vmin,100px) + clamp(52px,13vmin,78px) + 18px);bottom:18.5%;color:#ffd36a}
+.tb.bu{right:calc(4% + clamp(66px,17vmin,100px) + clamp(52px,13vmin,78px) + 12px);bottom:calc(18.5% + clamp(44px,11vmin,64px) + 22px);color:#7fe6f0;display:none}
+.cab[data-burst="1"] .tb.bu{display:block}
+.tsm{position:absolute;top:3%;pointer-events:auto;touch-action:none;border-radius:8px;border:1px solid rgba(239,230,210,.4);background:rgba(10,6,8,.45);color:var(--fg);font-family:var(--mono);font-weight:700;font-size:11px;padding:8px 12px;-webkit-tap-highlight-color:transparent}
+.tsm.p{right:2.5%}.tsm.q{right:calc(2.5% + 60px)}
+.tsm.on{background:rgba(194,69,42,.75)}
+/* landscape phones: the game takes the whole screen, like an app */
+@media (pointer:coarse) and (orientation:landscape){body{padding-block:4px}header,.keys,.note,.bar{display:none}.wrap{gap:4px}.cab{box-shadow:none;border:0;width:min(100%, calc((100svh - 8px) * 1.6))}}
+.rotate{display:none;font-size:13px;color:var(--gold);margin:0}
+@media (pointer:coarse) and (orientation:portrait){.rotate{display:block}}
+#game{image-rendering:pixelated;image-rendering:crisp-edges}
+#text{pointer-events:none}
+.cab:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.06em;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:8px 12px;cursor:pointer}
+.btn:hover{border-color:var(--ochre)}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn input{display:none}
+.keys{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin:0;padding:0;list-style:none}
+.keys kbd{font-family:var(--mono);font-size:11px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;margin-right:3px}
+.note{font-size:14px;line-height:1.6;color:var(--muted);max-width:68ch;margin:0}
+.note b{color:var(--fg);font-weight:600}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Tāne's <span>Ascent</span></h1>
+    <p class="sub">Ngā Kete o te Wānanga</p>
+  </header>
+
+  <div class="cab" id="cab" tabindex="0" aria-label="Tāne's Ascent game screen">
+    <canvas id="game" width="384" height="240"></canvas>
+    <canvas id="text" width="1152" height="720"></canvas>
+    <div id="touch" aria-label="Touch controls">
+      <div id="stickZone"><div class="stick" id="stick"><div class="knob" id="knob"></div></div></div>
+      <button class="tb big" data-a="jump ok" aria-label="Jump">JUMP</button>
+      <button class="tb a" data-a="attack" aria-label="Strike">STRIKE</button>
+      <button class="tb l" data-a="light" aria-label="Light bolt">LIGHT</button>
+      <button class="tb r" data-a="roll" aria-label="Roll">ROLL</button>
+      <button class="tb s hv" data-a="heavy" aria-label="Heavy strike">HEAVY</button>
+      <button class="tb s bu" id="bBurst" data-a="burst" aria-label="Mana Burst">BURST</button>
+      <button class="tsm q" data-a="lore" aria-label="Lore book">LORE</button>
+      <button class="tsm p" data-a="pause" aria-label="Menu">❚❚</button>
+    </div>
+  </div>
+
+  <p class="rotate">Turn your phone sideways and tap Full screen to play.</p>
+  <div class="bar">
+    <button class="btn" id="full">Full screen</button>
+  </div>
+
+  <ul class="keys">
+    <li><kbd>←</kbd><kbd>→</kbd> move</li>
+    <li><kbd>Space</kbd> jump</li>
+    <li><kbd>X</kbd> strike</li>
+    <li><kbd>F</kbd> heavy</li>
+    <li><kbd>R</kbd> burst</li>
+    <li><kbd>C</kbd> light (hold to charge)</li>
+    <li><kbd>Shift</kbd> roll</li>
+    <li><kbd>Q</kbd> lore</li>
+    <li><kbd>Esc</kbd> menu</li>
+    <li>Keys can be changed in Settings</li>
+  </ul>
+
+  <p class="note">Tāne climbs the twelve heavens to bring <b>Ngā Kete o te Wānanga</b> to the people, while his brother Whiro sends the creatures of darkness against him. Tellings, names and the number of heavens differ between iwi. This game follows a common outline and claims no single authority. Progress saves in this browser at every carved pou. Difficulty, key bindings, text size and reduced motion are in Settings.</p>
+</div>
+
+<script src="core.js"></script>
+<script src="audio.js"></script>
+<script src="sprites.js"></script>
+<script src="biomes.js"></script>
+<script src="world.js"></script>
+<script src="act1.js"></script>
+<script src="acts23.js"></script>
+<script src="bosses.js"></script>
+<script src="story.js"></script>
+<script src="main.js"></script>
+<script>
+(() => {
+  G.bindTouch(document.getElementById('touch'));
+  // floating thumbstick: appears where the thumb lands, like PUBG Mobile
+  const zone = document.getElementById('stickZone'), stick = document.getElementById('stick'), knob = document.getElementById('knob');
+  let sid = null, ox = 0, oy = 0;
+  const dirs = ['left', 'right', 'up', 'down'], release = () => dirs.forEach(a => G.touchSet(a, 0));
+  const move = e => { const dx = e.clientX - ox, dy = e.clientY - oy, R = stick.offsetWidth * .38, d = Math.hypot(dx, dy) || 1, k = Math.min(1, R / d);
+    knob.style.transform = `translate(${dx * k}px,${dy * k}px)`; G.touchSet('left', dx < -12); G.touchSet('right', dx > 12); G.touchSet('up', dy < -R * .55); G.touchSet('down', dy > R * .55); };
+  zone.addEventListener('pointerdown', e => { e.preventDefault(); G.audio.init(); G.input.last = 'touch'; sid = e.pointerId; try { zone.setPointerCapture(sid); } catch (_) { }
+    const r = zone.getBoundingClientRect(); ox = e.clientX; oy = e.clientY; stick.style.left = (ox - r.left) + 'px'; stick.style.top = (oy - r.top) + 'px'; stick.classList.add('on'); move(e); });
+  zone.addEventListener('pointermove', e => { if (e.pointerId === sid) move(e); });
+  const end = e => { if (e.pointerId !== sid) return; sid = null; stick.classList.remove('on'); stick.style.left = ''; stick.style.top = ''; knob.style.transform = ''; release(); };
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => zone.addEventListener(ev, end));
+  window.addEventListener('blur', release);
+  const cab = document.getElementById('cab');
+  document.getElementById('full').addEventListener('click', () => { try { const p = (cab.requestFullscreen || cab.webkitRequestFullscreen).call(cab); const lock = () => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }; if (p && p.then) p.then(lock, () => {}); else lock(); } catch (e) {} });
+  ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'].forEach(ev => addEventListener(ev, () => G.audio.init(), { capture: true, passive: true }));   // phones unlock sound on the END of a tap
+  cab.addEventListener('pointerdown', e => { G.audio.init(); if (e.pointerType === 'mouse') cab.focus({ preventScroll: true }); });
+})();
+</script>
+<script>
+/* Android app (Capacitor): the phone's back button opens the pause menu or goes back a screen; on the title screen it closes the app */
+(function () {
+  const C = window.Capacitor; if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
+  const App = C.Plugins && C.Plugins.App; if (!App) return;
+  App.addListener('backButton', () => {
+    if (window.G && G.S && G.S.mode === 'title') { App.exitApp(); return; }
+    dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape' }));
+    setTimeout(() => dispatchEvent(new KeyboardEvent('keyup', { code: 'Escape' })), 80);
+  });
+})();
+</script>

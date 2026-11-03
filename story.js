@@ -10,7 +10,7 @@ G.LORE = {
   3: { t: 'The children of Rangi and Papa', b: 'Among the children were Tāne of the forests and birds, Tangaroa of the sea, Tūmatauenga of people and war, Rongo of cultivated food, Haumia-tiketike of wild food, Tāwhirimātea of the winds, and Whiro.' },
   4: { t: 'Tāwhirimātea', b: 'Not every child wanted the parents parted. Tāwhirimātea went with his father into the sky, and his storms still answer the separation. This heaven carries his anger.' },
   5: { t: 'The separation', b: 'Tāne lay on his back, set his feet against his father and his shoulders against his mother, and pushed until they parted. Light entered between them: Te Ao Mārama, the world of light.' },
-  6: { t: 'Tāne-nui-a-Rangi', b: 'Tāne carries many names, each tied to a deed. As Tāne-mahuta he clothed his mother in forest. As Tāne-nui-a-Rangi he climbed to the heavens for knowledge.' },
+  6: { t: 'Tāne-nui-a-Rangi', b: 'Tāne carries many names, each tied to a deed. As Tāne-mahuta he clothed his mother in forest. As Tāne-nui-a-Rangi he climbed to the heavens for knowledge. He also set the stars on his father’s body.' },
   7: { t: 'The many heavens', b: 'The number of heavens and their names differ from iwi to iwi. Many tellings count twelve, with Toi-o-ngā-Rangi as the highest, and Matangireia as the house within it.' },
   8: { t: 'Io-Matua-Kore', b: 'Some traditions speak of Io-Matua-Kore, the parentless one, who dwells in the uppermost heaven and keeps the baskets. Other traditions do not include Io. Both are part of the wider story.' },
   9: { t: 'Whiro', b: 'Whiro was the elder brother. He claimed the baskets by right of birth and resented Tāne for parting their parents. In many tellings he withdraws to the underworld and sends sickness and misfortune from there.' },
@@ -28,8 +28,8 @@ G.CHAPTER = {
   4: 'The air turns. Tāwhirimātea never forgave the separation, and this heaven is his.',
   5: 'Gold light, still water, old carvings. The carvings already know Tāne’s name.',
   6: 'The moon rules this heaven, and the tide follows the moon. Its keeper tests all who climb.',
-  7: 'Paths of stars hang over nothing. One wrong step falls forever.',
-  8: 'The sky moves like a living cloak. Mana gathers in storms of colour.',
+  7: 'Here Tāne dresses his father, Rangi, in stars. Each one he throws becomes a step over nothing.',
+  8: 'Tahu-nui-a-Rangi, the great glow of the sky. The aurora moves like a living cloak, and mana gathers in its colours.',
   9: 'Black vines, cold mist, creatures twisted out of shape. Whiro has taken hold here.',
   10: 'This heaven is breaking apart. Carved houses drift in pieces, and any handhold may give way.',
   11: 'Light and darkness are at war. Here, the generations of Te Pō that Tāne descends from wait to stand with him.',
@@ -38,9 +38,10 @@ G.CHAPTER = {
 };
 
 G.TIPS = [
-  'Some walls can be climbed: slide down them, then jump off.',
+  'Slide down a rock wall, then jump off it. Cracked, tide and spirit stones are too smooth.',
   'Strike from behind for a critical hit.',
   'Swing your taiaha at an incoming bolt to knock it away.',
+  'A pulsing gold ring means: strike this.',
   'Hold light to charge a stronger bolt. It costs more mana.',
   'Run, then crouch to slide under low gaps. Tunnels hide relics.',
   'Roll through attacks. You cannot be hurt mid-roll.',

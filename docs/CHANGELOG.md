@@ -1,5 +1,32 @@
 # Change log
 
+## 1.1.0-beta — 3 November 2026: story moments, readability, Android app
+
+**Story moments**
+- **Rangi Tuatoru:** near the gate, Whiro sends his swarm, and the winds turn and blow it away. This is the truce, shown on screen, and it matches the tradition of the winds aiding Tāne.
+- **Rangi Tuaono:** Tāne dresses his father, Rangi, in stars. The first star he throws says so, and the chapter card and a carving set it up.
+- **Rangi Tuawhitu** is now Tahu-nui-a-Rangi, the aurora, "the great glow of the sky".
+- **Rangi Tuawaru:** Whiro visibly draws the light out of Tāne into his hand, and the world drains of colour. Light pressed in the dark fizzles: "No light answers. Whiro holds it now."
+- **Rangi Tuangahuru:** the ancestors step out of the pou in a glow before they fight.
+- **Whiro's army:** pekapeka (bats) are a new enemy. They roost, then dart and retreat. The hostile birds are restyled as brown carrion birds with hooked beaks.
+
+**Readability**
+- One shared "strike this" cue, a pulsing gold ring, now marks seeds, gate stones, moon stones and the kererū cage.
+- New Kupu (words) page in the lore book: 26 te reo words with meanings.
+- No more than two messages on screen at once.
+- New tips for the strike ring and for which walls can't be climbed.
+
+**Android app**
+- Capacitor project (`android/`) with the app ID `nz.tanesascent.game`.
+- The app is locked sideways and fills the screen, sound can start without a tap, and it asks for no permissions.
+- The phone's back button opens the pause menu, goes back a screen, or closes the app from the title screen.
+- The app icon and splash screen are made from the game's own art.
+- A GitHub Actions build makes a test APK and an app bundle on every push. It signs the bundle once the upload-key secrets are added.
+
+**Store kit**
+- `store/` holds the icon, feature graphic, 7 screenshots and the answers for the Play Console forms.
+- `privacy.html` is a privacy policy: no data collected.
+
 ## 1.0.5-beta — 3 November 2026: lore and story fixes
 
 Stacy's decisions as cultural lead, based on the Knowledge Basket legend and Timoti Kāretu, "Te Kete Tuawhā, Te Kete Aroiti" (Te Kaharoa, 2008).

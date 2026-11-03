@@ -133,3 +133,15 @@ h1 span{color:var(--ochre)}
   cab.addEventListener('pointerdown', e => { G.audio.init(); if (e.pointerType === 'mouse') cab.focus({ preventScroll: true }); });
 })();
 </script>
+<script>
+/* Android app (Capacitor): the phone's back button opens the pause menu or goes back a screen; on the title screen it closes the app */
+(function () {
+  const C = window.Capacitor; if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
+  const App = C.Plugins && C.Plugins.App; if (!App) return;
+  App.addListener('backButton', () => {
+    if (window.G && G.S && G.S.mode === 'title') { App.exitApp(); return; }
+    dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape' }));
+    setTimeout(() => dispatchEvent(new KeyboardEvent('keyup', { code: 'Escape' })), 80);
+  });
+})();
+</script>
