@@ -129,7 +129,7 @@ h1 span{color:var(--ochre)}
   window.addEventListener('blur', release);
   const cab = document.getElementById('cab');
   document.getElementById('full').addEventListener('click', () => { try { const p = (cab.requestFullscreen || cab.webkitRequestFullscreen).call(cab); const lock = () => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }; if (p && p.then) p.then(lock, () => {}); else lock(); } catch (e) {} });
-  ['pointerdown', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, () => G.audio.init(), { capture: true, passive: true }));
+  ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'].forEach(ev => addEventListener(ev, () => G.audio.init(), { capture: true, passive: true }));   // phones unlock sound on the END of a tap
   cab.addEventListener('pointerdown', e => { G.audio.init(); if (e.pointerType === 'mouse') cab.focus({ preventScroll: true }); });
 })();
 </script>

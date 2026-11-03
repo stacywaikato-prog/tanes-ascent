@@ -1,11 +1,11 @@
 const puppeteer = require('puppeteer-core'); const path = require('path'); const fs = require('fs');
-const URL = 'file://' + path.resolve(__dirname, '../index.html'), OUT = path.resolve(__dirname, 'output');
+const URL = 'file://' + path.resolve(__dirname, process.env.GAME || '../tane', 'index.html'), OUT = path.resolve(__dirname, 'shots');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 (async () => {
-  const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--allow-file-access-from-files', '--autoplay-policy=no-user-gesture-required'] });
+  const browser = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--allow-file-access-from-files', '--autoplay-policy=no-user-gesture-required'] });
   const page = await browser.newPage(); await page.setViewport({ width: 1100, height: 900 });
-  const errs = []; page.on('pageerror', e => errs.push('PAGEERR ' + e.message)); page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
-  const dl = path.resolve(__dirname, 'output', 'downloads'); fs.rmSync(dl, { recursive: true, force: true }); fs.mkdirSync(dl);
+  const errs = []; page.on('pageerror', e => errs.push('PAGEERR ' + e.message)); page.on('console', m => { if (m.type() === 'error') errs.push(m.text() + ' @' + JSON.stringify(m.location()) + ' ' + m.args().map(a => a.remoteObject().description).join(' | ')); });
+  const dl = path.resolve(__dirname, 'dl'); fs.rmSync(dl, { recursive: true, force: true }); fs.mkdirSync(dl);
   const cdp = await page.target().createCDPSession(); await cdp.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: dl });
   await page.goto(URL); await page.evaluate(() => localStorage.clear()); await page.reload(); await page.waitForFunction(() => G.S.mode === 'title');
   const cab = await page.$('#cab'); const shot = n => cab.screenshot({ path: OUT + '/' + n + '.png' });
@@ -13,7 +13,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   // bosses: start, force defeat, confirm the gate opens and reward flow runs
   for (const n of [3, 6, 9]) { await page.evaluate(() => { G.S.mode = 'play'; });
     await page.evaluate(n => { G.S.ab = ['wings', 'dash', 'shield', 'burst', 'spear']; G.S.lives = 9; G.S.bosses = []; G.loadLevel(n, false); const A = G.World.L.arena; G.World.P.x = A.x0 + 90; G.World.P.y = A.floor - 22; }, n);
-    await sleep(1200); for (let i = 0; i < 40 && await page.evaluate(() => G.S.mode !== 'play'); i++) { await key('Enter'); await sleep(400); }
+    await sleep(1200); for (let i = 0; i < 20 && await page.evaluate(() => G.S.mode !== 'play'); i++) { await key('Enter'); await sleep(400); } await page.waitForFunction(() => G.S.mode === 'play', { timeout: 8000 });
     await page.evaluate(() => { G.World.P.hp = 999; const b = G.Boss.b; b.hp = .5; if (b.orbs) b.orbs = [0, 0, 0, 0]; b.open = 300; G.Boss.hitTest({ x: -1e5, y: -1e5, w: 2e5, h: 2e5 }, 5, { hit: new Set() }, { heavy: true }); });
     await sleep(4200);
     console.log('boss R' + n, JSON.stringify(await page.evaluate(() => ({ mode: G.S.mode, active: G.Boss.active, gate: G.World.L.gate.open, hp: G.Boss.b && G.Boss.b.max }))));

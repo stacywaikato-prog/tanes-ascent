@@ -1,5 +1,11 @@
 # Change log
 
+## 1.0.4-beta — 3 November 2026: sound on phones
+
+- Sound now starts on phones. Phones only allow sound from a finished tap, so the game now listens for the end of a tap as well as the start.
+- On iPhone, the game asks for "playback" audio and keeps a silent track running. Sound then plays even with the ring/silent switch on.
+- Turning sound off in Settings also stops the silent track.
+
 ## 1.0.3-beta — 3 November 2026: sound on by default
 
 - Sound is on by default. Browsers only allow sound after the player's first tap, click or key press, so it starts then; the title screen says so until it does.

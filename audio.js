@@ -65,17 +65,29 @@ A.build = (C, opts = {}) => {
   { const g = G_(0), o = C.createOscillator(), f = C.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = 560; lfo(23, 30, o.frequency); lfo(.7, 40, o.frequency); f.type = 'bandpass'; f.frequency.value = 1100; f.Q.value = 2; o.connect(f).connect(g).connect(A.cat.creature); o.start(); A.whine = { g }; }
   A.next = C.currentTime + .1; A.step = 0;
 };
+/* Phones only let sound start from a finished tap (touchend / pointerup / click), and iPhones mute
+   Web Audio while the ring/silent switch is on. So: ask for a "playback" audio session where the browser
+   supports it, keep a silent looping <audio> element playing (which also lifts the silent-switch mute on
+   iOS), and play a one-sample buffer on each unlock attempt. */
+const SILENT_WAV = 'data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdAHAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+A.unlock = () => {
+  try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) { }
+  if (A.ctx) { try { const b = A.ctx.createBuffer(1, 1, 22050), s = A.ctx.createBufferSource(); s.buffer = b; s.connect(A.ctx.destination); s.start(0); } catch (e) { } }
+  if (A.muted) return;
+  try { if (!A.silentEl) { const el = A.silentEl = document.createElement('audio'); el.src = SILENT_WAV; el.loop = true; el.setAttribute('playsinline', ''); el.preload = 'auto'; }
+    if (A.silentEl.paused) { const p = A.silentEl.play(); p && p.catch && p.catch(() => { }); } } catch (e) { }
+};
 A.init = () => {
-  if (A.ctx) { if (A.ctx.state === 'suspended') A.ctx.resume(); return; }
+  if (A.ctx) { if (A.ctx.state !== 'running' && !document.hidden) { try { A.ctx.resume(); } catch (e) { } A.unlock(); } return; }
   try {
-    A.build(new (window.AudioContext || window.webkitAudioContext)());
+    A.build(new (window.AudioContext || window.webkitAudioContext)()); A.unlock();
     A.timer = setInterval(() => { if (A.ctx && A.ctx.state === 'running') A.schedule(A.ctx.currentTime + .15); }, 25);
     if (A.pendingMood) A.setMood(A.pendingMood);
     if (A.pendingAmb) A.setAmb(A.pendingAmb);
     if (A.pendingTrim != null) A.cat.env.gain.value = CAT.env * (AMB_TRIM[A.pendingTrim] || 1);
   } catch (e) { A.ctx = null; }
 };
-A.toggleMute = () => { A.muted = !A.muted; if (A.master) A.master.gain.setTargetAtTime(A.muted ? 0 : MASTER, A.ctx.currentTime, .03); A.savePrefs(); G.toast && G.toast(A.muted ? 'Sound off' : 'Sound on'); };
+A.toggleMute = () => { A.muted = !A.muted; if (A.master) A.master.gain.setTargetAtTime(A.muted ? 0 : MASTER, A.ctx.currentTime, .03); A.savePrefs(); try { if (A.muted && A.silentEl) A.silentEl.pause(); else A.unlock(); } catch (e) { } G.toast && G.toast(A.muted ? 'Sound off' : 'Sound on'); };
 A.suspend = on => { if (!A.ctx) return; try { on ? A.ctx.suspend() : A.ctx.resume(); } catch (e) { } };
 
 /* ---------- mix helpers ---------- */
