@@ -4,7 +4,7 @@
 
 - **Title song:** Stacy's "Ascent of the Sacred Peak" now plays on the title screen and the menus you open from it. It loops, fades in, and fades out when a journey starts, when the game's own music takes over.
 - It follows the music volume and Settings → Sound off, and it pauses when the app is hidden.
-- It's loudness-matched and stored as music/title.m4a (3.4 MB, AAC).
+- It's loudness-matched and stored as music/title.mp3 (3.4 MB).
 - The credits name the title song.
 - The playtest report uses the new heaven names.
 

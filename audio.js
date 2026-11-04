@@ -319,7 +319,7 @@ A.setMood = (m, fade = 2.2) => {
 A.titleSong = on => {
   if (!A.ctx) return;
   if (on && !A.songEl) {
-    try { const el = A.songEl = new Audio('music/title.m4a'); el.loop = true; el.preload = 'auto'; el.setAttribute('playsinline', '');
+    try { const el = A.songEl = new Audio('music/title.mp3'); el.loop = true; el.preload = 'auto'; el.setAttribute('playsinline', '');
       A.songG = A.ctx.createGain(); A.songG.gain.value = 0; A.ctx.createMediaElementSource(el).connect(A.songG).connect(A.musicBus); } catch (e) { A.songEl = null; return; }
   }
   const el = A.songEl; if (!el) return;
