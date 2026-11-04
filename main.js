@@ -45,10 +45,10 @@ G.plog = {
     lines.push("Tāne's Ascent playtest report · " + new Date().toLocaleString(), 'Difficulty: ' + G.prefs.diff + ' · events logged: ' + ev.length, '');
     for (const n of Object.keys(by).sort((a, b) => a - b)) { const r = by[n], top = Object.entries(r.causes).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => k + ' ×' + v).join(', ');
       const buckets = [0, 0, 0, 0]; r.where.forEach(p => buckets[Math.min(3, Math.floor((p || 0) / 25))]++);
-      lines.push(`${n == 13 ? 'Toi' : 'Rangi ' + n}: cleared ${r.clears}× · deaths ${r.deaths}` + (r.secs.length ? ` · best time ${fmtTime(Math.min(...r.secs))}` : '') + (r.stars.length ? ` · best ${Math.max(...r.stars)}★` : ''));
+      lines.push(`${G.BIOMES[n] ? G.BIOMES[n].name : n}: cleared ${r.clears}× · deaths ${r.deaths}` + (r.secs.length ? ` · best time ${fmtTime(Math.min(...r.secs))}` : '') + (r.stars.length ? ` · best ${Math.max(...r.stars)}★` : ''));
       if (r.deaths) lines.push(`   deaths by progress 0-25% ${buckets[0]} · 25-50% ${buckets[1]} · 50-75% ${buckets[2]} · 75-100% ${buckets[3]} · causes: ${top}`); }
     const errs = ev.filter(x => x.e === 'error'); if (errs.length) { lines.push('', 'Errors:'); errs.slice(-5).forEach(x => lines.push('   ' + new Date(x.at).toLocaleString() + ' · ' + x.msg)); }
-    const quits = ev.filter(x => x.e === 'quit'); if (quits.length) lines.push('', 'Quit to title ' + quits.length + '× (last in ' + (quits.at(-1).n == 13 ? 'Toi' : 'Rangi ' + quits.at(-1).n) + ')');
+    const quits = ev.filter(x => x.e === 'quit'); if (quits.length) lines.push('', 'Quit to title ' + quits.length + '× (last in ' + (G.BIOMES[quits.at(-1).n] ? G.BIOMES[quits.at(-1).n].name : quits.at(-1).n) + ')');
     return lines.join('\n');
   }
 };
