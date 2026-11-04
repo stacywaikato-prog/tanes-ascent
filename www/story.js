@@ -196,7 +196,7 @@ G.credits = done => {
     ['display', 14, "TĀNE'S ASCENT"], ['body', 7, 'Ngā Kete o te Wānanga'], ['gap'],
     ['mono', 5, 'A GAME BY'], ['display', 10, 'Stacy'], ['gap'],
     ['mono', 5, 'STORY'], ['body', 6, 'The journey of Tāne-nui-a-Rangi to the uppermost heaven,'], ['body', 6, 'as it is told, in many forms, across Aotearoa.'], ['gap'],
-    ['mono', 5, 'DESIGN, CODE, PIXEL ART AND SOUND'], ['body', 6, "Generated with Claude from Stacy's brief"], ['gap'],
+    ['mono', 5, 'DESIGN, CODE, PIXEL ART AND SOUND'], ['body', 6, "Generated with Claude from Stacy's brief"], ['gap'], ['mono', 5, 'TITLE SONG'], ['body', 6, '“Ascent of the Sacred Peak” by Stacy'], ['gap'],
     ['mono', 5, 'A NOTE ON THE STORY'], ['body', 6, 'Tellings, names, and the number of heavens differ between iwi.'], ['body', 6, 'This game follows a common outline and claims no single authority.'], ['body', 6, 'Tradition says each heaven held its own tests. The tests in this game are imagined.'], ['body', 6, 'Seek out the people who hold these stories.'], ['gap'],
     
     ['mono', 5, 'COLLECTED'], ['body', 6, `${G.S.feathers} feathers · ${G.S.relics} greenstone relics · ${G.S.lore.length} of 13 carvings`], ['gap'], ['gap'],

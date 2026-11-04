@@ -1,5 +1,13 @@
 # Change log
 
+## 1.1.1-beta — 4 November 2026: title song
+
+- **Title song:** Stacy's "Ascent of the Sacred Peak" now plays on the title screen and the menus you open from it. It loops, fades in, and fades out when a journey starts, when the game's own music takes over.
+- It follows the music volume and Settings → Sound off, and it pauses when the app is hidden.
+- It's loudness-matched and stored as music/title.m4a (3.4 MB, AAC).
+- The credits name the title song.
+- The playtest report uses the new heaven names.
+
 ## 1.1.0-beta — 3 November 2026: story moments, readability, Android app
 
 **Story moments**

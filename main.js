@@ -215,6 +215,7 @@ function audioTransitions(s) {
 
 /* ---------- update ---------- */
 function update() {
+  { const s0 = S(), m = s0.mode; G.audio.titleSong(m === 'title' || m === 'newgame' || (OVERLAYS.includes(m) && (prevMode === 'title' || prevMode === 'newgame'))); }
   t++; const s = S();
   wipeStep();
   if (s.mode !== lastMode) { lastMode = s.mode; modeT = 0; } else modeT++;

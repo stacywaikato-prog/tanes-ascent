@@ -302,6 +302,7 @@ const THEME = []; { let st = 0; [[3, 4], [4, 2], [5, 2], [4, 4], [3, 4], [2, 4],
 A.MOODS = MOODS;
 const isBossMood = m => m === 'final' || /^boss/.test(m);
 A.setMood = (m, fade = 2.2) => {
+  A.wantMood = m; if (A.songOn && m === 'story') m = 'none';      // the title song replaces the menu music
   if (!A.ctx) { A.pendingMood = m; return; }
   if (A.mood === m) return;
   const C = A.ctx, t = now(), old = A.cur;
@@ -313,6 +314,21 @@ A.setMood = (m, fade = 2.2) => {
   A.prog = [0, md.sc[md.sc.length - 2] - 12, md.sc[2] - 12, md.sc[1]];
   A.step = 0; A.next = t + (old ? .3 : .05);
   A.applyTracks(fade);
+};
+/* ---------- the title song ---------- */
+A.titleSong = on => {
+  if (!A.ctx) return;
+  if (on && !A.songEl) {
+    try { const el = A.songEl = new Audio('music/title.m4a'); el.loop = true; el.preload = 'auto'; el.setAttribute('playsinline', '');
+      A.songG = A.ctx.createGain(); A.songG.gain.value = 0; A.ctx.createMediaElementSource(el).connect(A.songG).connect(A.musicBus); } catch (e) { A.songEl = null; return; }
+  }
+  const el = A.songEl; if (!el) return;
+  const t = now();
+  if (on !== A.songOn) { A.songOn = on;
+    A.songG.gain.cancelScheduledValues(t); A.songG.gain.setValueAtTime(A.songG.gain.value, t); A.songG.gain.linearRampToValueAtTime(on ? 1 : 0, t + (on ? 2 : 1.2));
+    if (on) { if (A.mood === 'story') A.setMood('none', 1.2); } else { clearTimeout(A.songStop); A.songStop = setTimeout(() => { if (!A.songOn) el.pause(); }, 1400); if (A.wantMood && A.mood !== A.wantMood) A.setMood(A.wantMood); }
+  }
+  if (on && el.paused && A.ctx.state === 'running' && !A.muted && !document.hidden && !A.songTry) { A.songTry = true; const p = el.play(); const done = () => { A.songTry = false; }; p && p.then ? p.then(done, done) : done(); }
 };
 A.procLevel = () => TRIM[A.mood] == null ? 1 : TRIM[A.mood];
 function choir(m, t, dur, pk) {
