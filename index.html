@@ -1,16 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Tāne's Ascent</title>
-<meta name="theme-color" content="#0a0607">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tāne's Ascent">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
@@ -56,16 +44,6 @@ h1 span{color:var(--ochre)}
 /* landscape phones: the game takes the whole screen, like an app */
 @media (pointer:coarse) and (orientation:landscape){body{padding-block:4px}header,.keys,.note,.bar{display:none}.wrap{gap:4px}.cab{box-shadow:none;border:0;width:min(100%, calc((100svh - 8px) * 1.6))}}
 .rotate{display:none;font-size:13px;color:var(--gold);margin:0}
-/* full screen: a small button over the game on phones (hidden once full screen, when installed, or in the Android app) */
-#fsBtn{position:absolute;top:3%;left:2.5%;display:none;pointer-events:auto;touch-action:manipulation;border-radius:8px;border:1px solid rgba(239,230,210,.4);background:rgba(10,6,8,.55);color:var(--fg);font-family:var(--mono);font-weight:700;font-size:11px;padding:8px 12px;z-index:5}
-@media (pointer:coarse){#fsBtn{display:block}}
-.cab:not([data-mode=play]) #fsBtn{left:auto;right:2.5%}
-@media (display-mode:fullscreen),(display-mode:standalone){#fsBtn{display:none!important}}
-.cab:fullscreen #fsBtn,.cab:-webkit-full-screen #fsBtn,html.app #fsBtn,html.installed #fsBtn{display:none!important}
-#iosHelp{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,3,4,.88);z-index:50;padding:16px}
-#iosHelp.on{display:flex}
-#iosHelp div{max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;color:var(--fg);font-size:15px;line-height:1.55}
-#iosHelp b{color:var(--gold)}#iosHelp ol{margin:8px 0 14px;padding-left:20px}
 @media (pointer:coarse) and (orientation:portrait){.rotate{display:block}}
 #game{image-rendering:pixelated;image-rendering:crisp-edges}
 #text{pointer-events:none}
@@ -90,7 +68,6 @@ h1 span{color:var(--ochre)}
   <div class="cab" id="cab" tabindex="0" aria-label="Tāne's Ascent game screen">
     <canvas id="game" width="384" height="240"></canvas>
     <canvas id="text" width="1152" height="720"></canvas>
-    <button id="fsBtn" aria-label="Full screen">⛶ FULL</button>
     <div id="touch" aria-label="Touch controls">
       <div id="stickZone"><div class="stick" id="stick"><div class="knob" id="knob"></div></div></div>
       <button class="tb big" data-a="jump ok" aria-label="Jump">JUMP</button>
@@ -166,35 +143,5 @@ h1 span{color:var(--ochre)}
     dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape' }));
     setTimeout(() => dispatchEvent(new KeyboardEvent('keyup', { code: 'Escape' })), 80);
   });
-})();
-</script>
-<div id="iosHelp" role="dialog" aria-label="Full screen on iPhone"><div>
-  <b>Full screen on iPhone</b>
-  <p style="margin:8px 0 0">iPhone browsers can't make a game full screen. Add it to your home screen instead:</p>
-  <ol><li>Tap the <b>Share</b> button (the square with an arrow).</li><li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li><li>Open Tāne's Ascent from your home screen. It fills the whole screen.</li></ol>
-  <button class="btn" id="iosOk">OK</button>
-</div></div>
-<script>
-/* full screen on phones: Android browsers go full screen (sideways) from a tap; iPhones need "Add to Home Screen" */
-(function () {
-  const cab = document.getElementById('cab'), btn = document.getElementById('fsBtn'), help = document.getElementById('iosHelp');
-  const native = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
-  const installed = navigator.standalone === true || matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
-  if (native) document.documentElement.classList.add('app'); if (installed) document.documentElement.classList.add('installed');
-  const canFS = !!(cab.requestFullscreen || cab.webkitRequestFullscreen);
-  const isFS = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
-  const goFS = () => {
-    if (native || installed || isFS()) return;
-    if (!canFS) { help.classList.add('on'); return; }
-    try { const p = (cab.requestFullscreen || cab.webkitRequestFullscreen).call(cab); const lock = () => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }; if (p && p.then) p.then(lock, () => {}); else lock(); } catch (e) {}
-  };
-  btn.addEventListener('click', e => { e.stopPropagation(); goFS(); });
-  btn.addEventListener('pointerdown', e => e.stopPropagation());
-  document.getElementById('iosOk').addEventListener('click', () => help.classList.remove('on'));
-  // the "Full screen" button under the game (portrait) uses the same path, so iPhones get the help instead of nothing
-  const full = document.getElementById('full'); if (full) full.addEventListener('click', e => { if (!canFS) { e.stopImmediatePropagation(); help.classList.add('on'); } }, true);
-  // Android: the first tap while sideways goes full screen by itself
-  let tried = false;
-  addEventListener('pointerup', e => { if (tried || !canFS || native || installed || isFS() || e.pointerType !== 'touch') return; if (!matchMedia('(orientation: landscape)').matches) return; tried = true; goFS(); }, true);
 })();
 </script>
