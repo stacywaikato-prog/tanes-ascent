@@ -1,5 +1,13 @@
 # Change log
 
+## 1.1.2-beta — 4 November 2026: full screen on phones
+
+- **New ⛶ FULL button over the game on phones,** shown sideways as well as upright. Before, the only full-screen button was hidden when the phone was sideways.
+- **Android browsers:** the first tap while sideways goes full screen by itself.
+- **iPhone:** Safari can't make a web game full screen, so the button explains how to Add to Home Screen. Launched from the home screen, the game opens full screen like an app (new web app manifest, icons, and iOS app tags).
+- **Page fixes:** the page now has a proper doctype, character set and phone viewport, so it lays out correctly on GitHub Pages.
+- **Android app:** the button is hidden, because the app is already full screen.
+
 ## 1.1.1-beta — 4 November 2026: title song
 
 - **Title song:** Stacy's "Ascent of the Sacred Peak" now plays on the title screen and the menus you open from it. It loops, fades in, and fades out when a journey starts, when the game's own music takes over.
